@@ -18,7 +18,5 @@ devtools::install_github("table1/framework")
 # 3. Edit the below line and run it  to initialize the project
 framework::init(
   project_name      = "Project Name",
-  project_structure = "default",
-  lintr             = "default",
-  styler            = "default"
+  project_structure = "default"
 )
