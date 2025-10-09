@@ -18,7 +18,8 @@ devtools::install_github("table1/framework")
 # 3. Edit and run this to initialize your project:
 framework::init(
   project_name = "My Project",
-  type = "analysis"  # Choose your project type (see below)
+  type = "analysis",  # Choose your project type (see below)
+  use_renv = FALSE    # Set TRUE to enable renv for reproducibility
 )
 
 # ================================================================

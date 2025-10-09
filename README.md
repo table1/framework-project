@@ -7,11 +7,9 @@ This repository provides a pre-configured project template for the [Framework R 
 
 Framework is a lightweight R package for structured, reproducible data analysis. It provides:
 - Convention-based project structure
-- Declarative data management with integrity tracking
+- Support for reading multiple formats with integrity tracking: CSV, Stata, SPSS, SAS, RDS
 - Smart caching for expensive operations
 - Database query helpers (PostgreSQL, SQLite)
-- Results tracking with encryption support
-- Support for multiple formats: CSV, Stata, SPSS, SAS, RDS
 
 Learn more at [github.com/table1/framework](https://github.com/table1/framework)
 
@@ -40,7 +38,8 @@ source("init.R")
 ```r
 framework::init(
   project_name = "MyAnalysis",
-  type = "analysis"  # Creates notebooks/, scripts/, data/, results/
+  type = "analysis",  # Creates notebooks/, scripts/, data/, results/
+  use_renv = FALSE    # Set TRUE to enable renv for reproducibility
 )
 ```
 
@@ -162,6 +161,48 @@ connections:
     host: !expr Sys.getenv("DB_HOST")
     password: !expr Sys.getenv("DB_PASSWORD")
 ```
+
+## Reproducibility with renv (Optional)
+
+Framework includes **optional** renv integration for package version management:
+
+```r
+# Enable during init (recommended)
+framework::init(
+  project_name = "MyProject",
+  type = "analysis",
+  use_renv = TRUE  # Creates renv infrastructure
+)
+
+# Or enable later
+renv_enable()
+
+# Snapshot package versions after installing new packages
+packages_snapshot()
+
+# Restore packages on new machine
+packages_restore()
+
+# Disable if you prefer not to use renv
+renv_disable()
+```
+
+**Benefits of renv:**
+- Locks package versions for reproducibility
+- Isolates project dependencies
+- Works with Framework's package management in `config.yml`
+
+**Version pinning in config.yml:**
+```yaml
+packages:
+  - dplyr              # Latest from CRAN
+  - ggplot2@3.4.0     # Specific version
+  - tidyverse/dplyr@main  # GitHub with ref
+```
+
+## Roadmap
+
+- Results tracking with encryption support
 
 ## Next Steps
 
