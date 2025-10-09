@@ -23,7 +23,7 @@ Learn more at [github.com/table1/framework](https://github.com/table1/framework)
 git clone https://github.com/table1/framework-project my-project-name
 cd my-project-name
 
-# Open in RStudio or your preferred IDE
+# Open in Positron, RStudio0 or your preferred IDE
 ```
 
 Then in R:
