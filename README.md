@@ -34,7 +34,7 @@ devtools::install_github("table1/framework")
 source("init.R")
 ```
 
-**Most common setup** (data analysis project):
+**Most common setup** (data analysis project):00
 ```r
 framework::init(
   project_name = "MyAnalysis",
