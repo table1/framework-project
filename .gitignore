@@ -17,3 +17,6 @@ vignettes/*.pdf
 .vscode
 
 .DS_Store
+
+# README build system (for maintainers only)
+readme-parts/

@@ -26,6 +26,8 @@ The README uses a modular parts system located in `readme-parts/`:
 
 **Key Difference from framework repo**: This repo intentionally OMITS part 4 (`4_usage_notebooks.md`) because `make_notebook()` documentation is for framework package users, not template users.
 
+**IMPORTANT**: The `readme-parts/` directory is gitignored (maintainers only). It exists in your local checkout but won't be pushed to GitHub. Users who clone the repo will only see the built `README.md`.
+
 See `readme-parts/README.md` for complete documentation.
 
 ## Shared Content with Framework
