@@ -1,7 +1,5 @@
 # Framework Project Template
 
-**The easiest way to start a Framework-based data analysis project.**
-
 This repository provides a pre-configured project template for the [Framework R package](https://github.com/table1/framework). Clone it, edit `init.R` with your settings, and run it to scaffold your project.
 
 
