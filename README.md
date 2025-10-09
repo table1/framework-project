@@ -6,9 +6,12 @@ This repository provides a pre-configured project template for the [Framework R 
 ## About Framework
 
 Framework is a lightweight R package for structured, reproducible data analysis. It provides:
+
 - Convention-based project structure
-- Support for reading multiple formats with integrity tracking: CSV, Stata, SPSS, SAS, RDS
-- Smart caching for expensive operations
+- Support for reading multiple formats with integrity tracking: CSV/TSV, RDS, Stata, SPSS, SAS
+- Safe `git` rules to make it easy to keep private data safe
+- Easy `renv` integration, if you want it.
+- Caching for expensive operations
 - Database query helpers (PostgreSQL, SQLite)
 
 Learn more at [github.com/table1/framework](https://github.com/table1/framework)
@@ -39,11 +42,9 @@ source("init.R")
 framework::init(
   project_name = "MyAnalysis",
   type = "analysis",  # Creates notebooks/, scripts/, data/, results/
-  use_renv = FALSE    # Set TRUE to enable renv for reproducibility
+  use_renv = FALSE    # Set TRUE to enable renv for reproducibile computing environments
 )
 ```
-
-That's it! Your project structure is ready.
 
 ## What Gets Created
 
