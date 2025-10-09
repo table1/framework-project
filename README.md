@@ -1,197 +1,250 @@
-# Framework Project Template
+# Framework
 
-This repository provides a pre-configured project template for the [Framework R package](https://github.com/table1/framework). Clone it, edit `init.R` with your settings, and run it to scaffold your project.
+A lightweight R package for structured, reproducible data analysis projects focusing on convention over configuration.
 
-
-## About Framework
-
-Framework is a lightweight R package for structured, reproducible data analysis. It provides:
-
-- Convention-based project structure
-- Support for reading multiple formats with integrity tracking: CSV/TSV, RDS, Stata, SPSS, SAS
-- Safe `git` rules to make it easy to keep private data safe
-- Easy `renv` integration, if you want it.
-- Caching for expensive operations
-- Database query helpers (PostgreSQL, SQLite)
-
-Learn more at [github.com/table1/framework](https://github.com/table1/framework)
+**⚠️ Active Development:** APIs may change. Version 1 with stable API coming soon.
 
 ## Quick Start
 
-```bash
-# Clone this template
-git clone https://github.com/table1/framework-project my-project-name
-cd my-project-name
+### Option 1: Use the Template (Recommended)
 
-# Open in Positron, RStudio, or your preferred IDE
+```bash
+git clone https://github.com/table1/framework-project my-project
+cd my-project
 ```
 
-Then in R:
-
+Edit `init.R` with your settings, then run:
 ```r
-# Install framework package (if not already installed)
 devtools::install_github("table1/framework")
-
-# Edit init.R to set your project name and type
-# Then run it:
 source("init.R")
 ```
 
-**Most common setup** (data project):
+**Most common setup:**
 ```r
 framework::init(
-  project_name = "My Project",
+  project_name = "MyProject",
   type = "project",  # Creates notebooks/, scripts/, data/, results/
-  use_renv = FALSE   # Set TRUE to enable renv for reproducibile computing environments
+  use_renv = FALSE   # Set TRUE to enable renv for reproducibility
 )
 ```
 
+### Option 2: Start from Scratch
+
+```r
+# Install package
+devtools::install_github("table1/framework")
+
+# Initialize in current directory
+framework::init(
+  project_name = "MyProject",
+  type = "project",       # or "course" or "presentation"
+  use_renv = FALSE,       # Set TRUE to enable renv
+  interactive = FALSE
+)
+```
+
+### Project Types
+
+- **project** (default): Full-featured with `notebooks/`, `scripts/`, `data/` (public/private splits), `results/`, `functions/`, `docs/`
+- **course**: For teaching with `presentations/`, `notebooks/`, `data/`, `functions/`, `docs/`
+- **presentation**: Minimal for single talks with `data/`, `functions/`, `results/`
+
+**Not sure?** Use `type = "project"` - it's the most flexible.
+
+## What It Does
+
+Framework reduces boilerplate and enforces best practices for data analysis:
+
+- **Project scaffolding** - Standardized directories, config-driven setup
+- **Data management** - Declarative data catalog, integrity tracking, encryption
+- **Auto-loading** - Packages and custom functions loaded automatically
+- **Optional renv integration** - Reproducible package management (opt-in)
+- **Caching** - Smart caching for expensive computations
+- **Database helpers** - PostgreSQL, SQLite with credential management
+- **Results tracking** - Save/retrieve analysis outputs with blinding support
+- **Supported formats** - CSV, TSV, RDS, Stata (.dta), SPSS (.sav), SAS (.xpt, .sas7bdat)
+
 ## What Gets Created
 
-Running `framework::init()` creates:
+When you run `init()`, Framework creates:
 
-- **Project structure** - Organized directories for data, scripts, functions, results
+- **Project structure** - Organized directories (varies by type)
 - **Configuration files** - `config.yml` and optional `settings/` files
 - **Git setup** - `.gitignore` configured to protect private data
 - **Tooling** - `.lintr`, `.styler.R`, `.editorconfig` for code quality
 - **Database** - `framework.db` for metadata tracking
 - **Environment** - `.env` template for secrets
 
-## First Steps After Init
+### Example: Project Type Structure
 
-### 1. Start a new session
+```
+project/
+├── notebooks/              # Exploratory analysis
+├── scripts/                # Production pipelines
+├── data/
+│   ├── source/private/     # Raw data (gitignored)
+│   ├── source/public/      # Public raw data
+│   ├── cached/            # Computation cache (gitignored)
+│   └── final/private/     # Results (gitignored)
+├── functions/             # Custom functions
+├── results/private/       # Analysis outputs (gitignored)
+├── docs/                  # Documentation
+├── config.yml            # Project configuration
+├── framework.db          # Metadata/tracking database
+└── .env                  # Secrets (gitignored)
+```
+
+## Core Workflow
+
+### 1. Initialize Your Session
 
 ```r
 library(framework)
-scaffold()  # Loads packages, functions, config
+scaffold()  # Loads packages, functions, config, standardizes working directory
 ```
 
-### 2. Add your data
+### 2. Load Data
 
-Create a data specification in `config.yml` or `settings/data.yml`:
-
+**Via config:**
 ```yaml
+# config.yml or settings/data.yml
 data:
   source:
     private:
       survey:
-        path: data/source/private/survey.csv
-        type: csv
+        path: data/source/private/survey.dta
+        type: stata
         locked: true
 ```
 
-Then load it:
-
 ```r
+# Load using dot notation
 df <- data_load("source.private.survey")
 ```
 
-### 3. Start analyzing
-
+**Direct path:**
 ```r
-# Your analysis code
-results <- analyze(df)
-
-# Save results
-result_save("analysis_v1", results, type = "model")
+df <- data_load("data/my_file.csv")       # CSV
+df <- data_load("data/stata_file.dta")    # Stata
+df <- data_load("data/spss_file.sav")     # SPSS
 ```
 
-## Project Type Options
+Statistical formats (Stata/SPSS/SAS) strip metadata by default for safety. Use `keep_attributes = TRUE` to preserve labels.
 
-Framework supports three project types. Choose the one that matches your workflow:
+### 3. Cache Expensive Operations
 
-### 1. Project (default)
-Full-featured for data projects:
 ```r
-framework::init(project_name = "MyProject", type = "project")
+model <- get_or_cache("model_v1", {
+  expensive_model_fit(df)
+}, expire_after = 1440)  # Cache for 24 hours
 ```
-Creates: `notebooks/`, `scripts/`, `data/` (with public/private splits), `results/`, `functions/`, `docs/`, `settings/`
 
-### 2. Course
-For teaching with multiple presentations:
+### 4. Save Results
+
 ```r
-framework::init(project_name = "MyProject", type = "course")
-```
-Creates: `presentations/`, `notebooks/`, `data/`, `functions/`, `docs/`, `settings/`
+# Save data
+data_save(processed_df, "final.private.clean", type = "csv")
 
-### 3. Presentation
-Minimal structure for single talks:
+# Save analysis output
+result_save("regression_model", model, type = "model")
+
+# Save notebook (blinded)
+result_save("report", file = "report.html", type = "notebook",
+            blind = TRUE, public = FALSE)
+```
+
+### 5. Query Databases
+
+```yaml
+# config.yml
+connections:
+  db:
+    driver: postgresql
+    host: !expr Sys.getenv("DB_HOST")
+    database: !expr Sys.getenv("DB_NAME")
+    user: !expr Sys.getenv("DB_USER")
+    password: !expr Sys.getenv("DB_PASS")
+```
+
 ```r
-framework::init(project_name = "MyProject", type = "presentation")
+df <- query_get("SELECT * FROM users WHERE active = true", "db")
 ```
-Creates: `data/`, `functions/`, `results/`
 
-**Not sure?** Start with `type = "project"` - it's the most flexible.
 
 ## Configuration
 
-Edit `config.yml` to customize:
-
+**Simple:**
 ```yaml
 default:
-  # List packages to auto-load
   packages:
     - dplyr
     - ggplot2
+  data:
+    example: data/example.csv
+```
 
-  # Data catalog
+**Advanced:** Split config into `settings/` files:
+```yaml
+default:
   data: settings/data.yml
-
-  # Database connections
+  packages: settings/packages.yml
   connections: settings/connections.yml
-
-  # Security settings (encryption keys)
   security: settings/security.yml
 ```
 
-## Secrets Management
-
-Store secrets in `.env` (gitignored):
-
+Use `.env` for secrets:
 ```env
 DB_HOST=localhost
-DB_PASSWORD=secret123
-DATA_ENCRYPTION_KEY=mykey
+DB_PASS=secret
+DATA_ENCRYPTION_KEY=key123
 ```
 
-Reference in `config.yml`:
-
+Reference in config:
 ```yaml
-connections:
-  db:
-    host: !expr Sys.getenv("DB_HOST")
-    password: !expr Sys.getenv("DB_PASSWORD")
+security:
+  data_key: !expr Sys.getenv("DATA_ENCRYPTION_KEY")
 ```
 
-## Reproducibility with renv (Optional)
+## Key Functions
 
-Framework includes **optional** renv integration for package version management:
+| Function | Purpose |
+|----------|---------|
+| `scaffold()` | Initialize session (load packages, functions, config) |
+| `data_load()` | Load data from path or config |
+| `data_save()` | Save data with integrity tracking |
+| `query_get()` | Execute SQL query, return data |
+| `query_execute()` | Execute SQL command |
+| `get_or_cache()` | Lazy evaluation with caching |
+| `result_save()` | Save analysis output |
+| `result_get()` | Retrieve saved result |
+| `scratch_capture()` | Quick debug/temp file save |
+| `renv_enable()` | Enable renv for reproducibility (opt-in) |
+| `renv_disable()` | Disable renv integration |
+| `packages_snapshot()` | Save package versions to renv.lock |
+| `packages_restore()` | Restore packages from renv.lock |
+
+## Data Integrity & Security
+
+- **Hash tracking** - All data files tracked with SHA-256 hashes
+- **Locked data** - Flag files as read-only, errors on modification
+- **Encryption** - AES encryption for sensitive data/results
+- **Gitignore by default** - Private directories auto-ignored
+
+## Reproducibility with renv
+
+Framework includes **optional** renv integration (OFF by default):
 
 ```r
-# Enable during init (recommended)
-framework::init(
-  project_name = "MyProject",
-  type = "project",
-  use_renv = TRUE  # Creates renv infrastructure
-)
-
-# Or enable later
+# Enable renv for this project
 renv_enable()
 
-# Snapshot package versions after installing new packages
+# Your packages are now managed by renv
+# Use snapshot after installing new packages
 packages_snapshot()
 
-# Restore packages on new machine
-packages_restore()
-
-# Disable if you prefer not to use renv
+# Disable renv if you prefer
 renv_disable()
 ```
-
-**Benefits of renv:**
-- Locks package versions for reproducibility
-- Isolates project dependencies
-- Works with Framework's package management in `config.yml`
 
 **Version pinning in config.yml:**
 ```yaml
@@ -201,14 +254,9 @@ packages:
   - tidyverse/dplyr@main  # GitHub with ref
 ```
 
+See [renv integration docs](docs/features/renv_integration.md) for details.
+
 ## Roadmap
 
-- Results tracking with encryption support
-
-## Next Steps
-
-- See [Framework documentation](https://github.com/table1/framework) for full features
-- Add your custom functions to `functions/`
-- Configure packages in `config.yml` or `settings/packages.yml`
-- Set up database connections in `settings/connections.yml`
-- Start analyzing!
+- Excel file support
+- Quarto codebook generation
