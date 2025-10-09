@@ -18,16 +18,16 @@ devtools::install_github("table1/framework")
 # 3. Edit and run this to initialize your project:
 framework::init(
   project_name = "My Project",
-  type = "analysis",  # Choose your project type (see below)
-  use_renv = FALSE    # Set TRUE to enable renv for reproducibility
+  type = "project",  # Choose your project type (see below)
+  use_renv = FALSE   # Set TRUE to enable renv for reproducibility
 )
 
 # ================================================================
 # PROJECT TYPES - Pick the one that fits your workflow:
 # ================================================================
 #
-# type = "analysis" (default)
-#   Full-featured for data analysis with notebooks/, scripts/,
+# type = "project" (default)
+#   Full-featured for data projects with notebooks/, scripts/,
 #   data/ (public/private splits), results/, functions/, docs/
 #
 # type = "course"
@@ -37,5 +37,5 @@ framework::init(
 # type = "presentation"
 #   Minimal for single talks with data/, functions/, results/
 #
-# Not sure? Start with "analysis" - it's the most flexible.
+# Not sure? Start with "project" - it's the most flexible.
 # ================================================================

@@ -23,7 +23,7 @@ Learn more at [github.com/table1/framework](https://github.com/table1/framework)
 git clone https://github.com/table1/framework-project my-project-name
 cd my-project-name
 
-# Open in Positron, RStudio0 or your preferred IDE
+# Open in Positron, RStudio, or your preferred IDE
 ```
 
 Then in R:
@@ -37,12 +37,12 @@ devtools::install_github("table1/framework")
 source("init.R")
 ```
 
-**Most common setup** (data analysis project):00
+**Most common setup** (data project):
 ```r
 framework::init(
-  project_name = "MyAnalysis",
-  type = "analysis",  # Creates notebooks/, scripts/, data/, results/
-  use_renv = FALSE    # Set TRUE to enable renv for reproducibile computing environments
+  project_name = "My Project",
+  type = "project",  # Creates notebooks/, scripts/, data/, results/
+  use_renv = FALSE   # Set TRUE to enable renv for reproducibile computing environments
 )
 ```
 
@@ -100,10 +100,10 @@ result_save("analysis_v1", results, type = "model")
 
 Framework supports three project types. Choose the one that matches your workflow:
 
-### 1. Analysis (default)
-Full-featured for data analysis projects:
+### 1. Project (default)
+Full-featured for data projects:
 ```r
-framework::init(project_name = "MyProject", type = "analysis")
+framework::init(project_name = "MyProject", type = "project")
 ```
 Creates: `notebooks/`, `scripts/`, `data/` (with public/private splits), `results/`, `functions/`, `docs/`, `settings/`
 
@@ -121,7 +121,7 @@ framework::init(project_name = "MyProject", type = "presentation")
 ```
 Creates: `data/`, `functions/`, `results/`
 
-**Not sure?** Start with `type = "analysis"` - it's the most flexible.
+**Not sure?** Start with `type = "project"` - it's the most flexible.
 
 ## Configuration
 
@@ -171,7 +171,7 @@ Framework includes **optional** renv integration for package version management:
 # Enable during init (recommended)
 framework::init(
   project_name = "MyProject",
-  type = "analysis",
+  type = "project",
   use_renv = TRUE  # Creates renv infrastructure
 )
 
