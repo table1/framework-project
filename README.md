@@ -4,6 +4,19 @@
 
 This repository provides a pre-configured project template for the [Framework R package](https://github.com/table1/framework). Clone it, edit `init.R` with your settings, and run it to scaffold your project.
 
+
+## About Framework
+
+Framework is a lightweight R package for structured, reproducible data analysis. It provides:
+- Convention-based project structure
+- Declarative data management with integrity tracking
+- Smart caching for expensive operations
+- Database query helpers (PostgreSQL, SQLite)
+- Results tracking with encryption support
+- Support for multiple formats: CSV, Stata, SPSS, SAS, RDS
+
+Learn more at [github.com/table1/framework](https://github.com/table1/framework)
+
 ## Quick Start
 
 ```bash
@@ -159,15 +172,3 @@ connections:
 - Configure packages in `config.yml` or `settings/packages.yml`
 - Set up database connections in `settings/connections.yml`
 - Start analyzing!
-
-## About Framework
-
-Framework is a lightweight R package for structured, reproducible data analysis. It provides:
-- Convention-based project structure
-- Declarative data management with integrity tracking
-- Smart caching for expensive operations
-- Database query helpers (PostgreSQL, SQLite)
-- Results tracking with encryption support
-- Support for multiple formats: CSV, Stata, SPSS, SAS, RDS
-
-Learn more at [github.com/table1/framework](https://github.com/table1/framework)
