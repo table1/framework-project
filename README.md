@@ -2,7 +2,7 @@
 
 **The easiest way to start a Framework-based data analysis project.**
 
-This repository provides a pre-configured project template for the [Framework R package](https://github.com/table1/framework). Clone it and run `framework::init()` to get started immediately.
+This repository provides a pre-configured project template for the [Framework R package](https://github.com/table1/framework). Clone it, edit `init.R` with your settings, and run it to scaffold your project.
 
 ## Quick Start
 
@@ -11,7 +11,7 @@ This repository provides a pre-configured project template for the [Framework R 
 git clone https://github.com/table1/framework-project my-project-name
 cd my-project-name
 
-# Open in RStudio or VS Code
+# Open in RStudio or your preferred IDE
 ```
 
 Then in R:
@@ -20,9 +20,17 @@ Then in R:
 # Install framework package (if not already installed)
 devtools::install_github("table1/framework")
 
-# Review init.R to configure your project settings
-# Then initialize:
-framework::init()
+# Edit init.R to set your project name and type
+# Then run it:
+source("init.R")
+```
+
+**Most common setup** (data analysis project):
+```r
+framework::init(
+  project_name = "MyAnalysis",
+  type = "analysis"  # Creates notebooks/, scripts/, data/, results/
+)
 ```
 
 That's it! Your project structure is ready.
@@ -77,37 +85,32 @@ results <- analyze(df)
 result_save("analysis_v1", results, type = "model")
 ```
 
-## Project Structure Options
+## Project Type Options
 
-Framework supports two project structures:
+Framework supports three project types. Choose the one that matches your workflow:
 
-**Default** - Full structure with organized work directories:
+### 1. Analysis (default)
+Full-featured for data analysis projects:
+```r
+framework::init(project_name = "MyProject", type = "analysis")
 ```
-project/
-├── data/
-│   ├── source/private/
-│   ├── cached/
-│   └── final/private/
-├── work/
-│   ├── analysis/
-│   ├── processing/
-│   └── notebooks/
-├── functions/
-├── results/private/
-├── settings/
-└── config.yml
-```
+Creates: `notebooks/`, `scripts/`, `data/` (with public/private splits), `results/`, `functions/`, `docs/`, `settings/`
 
-**Minimal** - Lightweight for simple projects:
+### 2. Course
+For teaching with multiple presentations:
+```r
+framework::init(project_name = "MyProject", type = "course")
 ```
-project/
-├── data/
-├── functions/
-├── results/
-└── config.yml
-```
+Creates: `presentations/`, `notebooks/`, `data/`, `functions/`, `docs/`, `settings/`
 
-Choose your structure when running `framework::init()`.
+### 3. Presentation
+Minimal structure for single talks:
+```r
+framework::init(project_name = "MyProject", type = "presentation")
+```
+Creates: `data/`, `functions/`, `results/`
+
+**Not sure?** Start with `type = "analysis"` - it's the most flexible.
 
 ## Configuration
 
@@ -160,7 +163,6 @@ connections:
 ## About Framework
 
 Framework is a lightweight R package for structured, reproducible data analysis. It provides:
-
 - Convention-based project structure
 - Declarative data management with integrity tracking
 - Smart caching for expensive operations
