@@ -17,7 +17,7 @@ PROJECT_NAME="${1}"
 if [ -z "$PROJECT_NAME" ]; then
   while [ -z "$PROJECT_NAME" ]; do
     echo -en "${YELLOW}Project name:${NC} "
-    read -r PROJECT_NAME
+    read -r PROJECT_NAME </dev/tty
     if [ -z "$PROJECT_NAME" ]; then
       echo -e "${RED}Project name cannot be empty. Please try again.${NC}"
     fi
