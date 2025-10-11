@@ -15,12 +15,13 @@ NC='\033[0m' # No Color
 PROJECT_NAME="${1}"
 
 if [ -z "$PROJECT_NAME" ]; then
-  echo -e "${YELLOW}Project name:${NC} "
-  read -r PROJECT_NAME
-  if [ -z "$PROJECT_NAME" ]; then
-    echo -e "${RED}Error: Project name is required${NC}"
-    exit 1
-  fi
+  while [ -z "$PROJECT_NAME" ]; do
+    echo -en "${YELLOW}Project name:${NC} "
+    read -r PROJECT_NAME
+    if [ -z "$PROJECT_NAME" ]; then
+      echo -e "${RED}Project name cannot be empty. Please try again.${NC}"
+    fi
+  done
 fi
 
 echo -e "${BLUE}════════════════════════════════════════════════════${NC}"
