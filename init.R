@@ -76,18 +76,18 @@ if (interactive()) {
 
   # Default packages configuration
   cat("Default packages:\n")
-  cat("  Framework can auto-attach common packages when you run scaffold()\n")
-  cat("  Recommended: dplyr, tidyr, ggplot2\n\n")
+  cat("  When you run scaffold(), should we automatically load dplyr, tidyr, and ggplot2?\n")
+  cat("  (Like running library(dplyr), library(tidyr), library(ggplot2) for you)\n\n")
 
-  use_defaults <- tolower(trimws(readline("Use recommended default packages? (y/n) [y]: ")))
+  use_defaults <- tolower(trimws(readline("Auto-load common packages? (y/n) [y]: ")))
   attach_defaults <- use_defaults != "n" && use_defaults != "no"
 
   if (attach_defaults) {
-    cat("  \u2713 Will auto-attach: dplyr, tidyr, ggplot2\n")
-    cat("  \u2713 Will install but not attach: readr, stringr, scales\n")
+    cat("  \u2713 Will auto-load: dplyr, tidyr, ggplot2\n")
+    cat("  \u2713 Will install (but not load): readr, stringr, scales\n")
   } else {
-    cat("  No default packages will be auto-attached\n")
-    cat("  You can configure this later in config.yml\n")
+    cat("  No packages will be auto-loaded\n")
+    cat("  You can configure this later in settings/packages.yml\n")
   }
 
 } else {
