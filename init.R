@@ -54,6 +54,7 @@ if (fw_non_interactive) {
   author_name <- Sys.getenv("FW_AUTHOR_NAME", "Your Name")
   author_email <- Sys.getenv("FW_AUTHOR_EMAIL", "")
   author_affiliation <- Sys.getenv("FW_AUTHOR_AFFILIATION", "")
+  default_format <- Sys.getenv("FW_DEFAULT_FORMAT", "quarto")
 
   # Suppress welcome messages when called from install.sh
   # (install.sh provides its own beautiful output)
@@ -67,6 +68,12 @@ if (fw_non_interactive) {
     author_name <- sub("^FW_AUTHOR_NAME=\"(.*)\"$", "\\1", grep("^FW_AUTHOR_NAME=", rc_lines, value = TRUE))
     author_email <- sub("^FW_AUTHOR_EMAIL=\"(.*)\"$", "\\1", grep("^FW_AUTHOR_EMAIL=", rc_lines, value = TRUE))
     author_affiliation <- sub("^FW_AUTHOR_AFFILIATION=\"(.*)\"$", "\\1", grep("^FW_AUTHOR_AFFILIATION=", rc_lines, value = TRUE))
+    default_format_line <- grep("^FW_DEFAULT_FORMAT=", rc_lines, value = TRUE)
+    default_format <- if (length(default_format_line) > 0) {
+      sub("^FW_DEFAULT_FORMAT=\"(.*)\"$", "\\1", default_format_line)
+    } else {
+      "quarto"  # Default if not in config
+    }
 
     cat(sprintf("Using author: %s\n", author_name))
     cat("\n")
@@ -82,6 +89,14 @@ if (fw_non_interactive) {
 
     author_affiliation <- readline("Your affiliation (optional): ")
 
+    cat("\n")
+    cat("Default notebook format:\n")
+    cat("  1. Quarto (.qmd) - recommended\n")
+    cat("  2. RMarkdown (.Rmd)\n")
+    cat("\n")
+    format_choice <- readline("Choose format (1-2) [1]: ")
+    default_format <- if (trimws(format_choice) == "2") "rmarkdown" else "quarto"
+
     # Save to config file
     writeLines(
       c(
@@ -89,7 +104,8 @@ if (fw_non_interactive) {
         "# Edit this file to update your default author information",
         sprintf("FW_AUTHOR_NAME=\"%s\"", author_name),
         sprintf("FW_AUTHOR_EMAIL=\"%s\"", author_email),
-        sprintf("FW_AUTHOR_AFFILIATION=\"%s\"", author_affiliation)
+        sprintf("FW_AUTHOR_AFFILIATION=\"%s\"", author_affiliation),
+        sprintf("FW_DEFAULT_FORMAT=\"%s\"", default_format)
       ),
       frameworkrc
     )
@@ -185,7 +201,8 @@ framework::init(
   attach_defaults = attach_defaults,
   author_name = author_name,
   author_email = author_email,
-  author_affiliation = author_affiliation
+  author_affiliation = author_affiliation,
+  default_notebook_format = default_format
 )
 
 # ================================================================

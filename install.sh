@@ -47,6 +47,19 @@ if [ -z "$FW_AUTHOR_NAME" ]; then
   echo -en "${YELLOW}Your affiliation (optional):${NC} "
   eval "$READ_CMD FW_AUTHOR_AFFILIATION"
 
+  echo ""
+  echo -e "${YELLOW}Default notebook format:${NC}"
+  echo "  1. Quarto (.qmd) - recommended"
+  echo "  2. RMarkdown (.Rmd)"
+  echo ""
+  echo -en "${YELLOW}Choose format (1-2) [1]:${NC} "
+  eval "$READ_CMD FORMAT_CHOICE"
+
+  case "$FORMAT_CHOICE" in
+    2) FW_DEFAULT_FORMAT="rmarkdown" ;;
+    *) FW_DEFAULT_FORMAT="quarto" ;;
+  esac
+
   # Save to config file
   {
     echo "# Framework configuration"
@@ -54,6 +67,7 @@ if [ -z "$FW_AUTHOR_NAME" ]; then
     echo "FW_AUTHOR_NAME=\"$FW_AUTHOR_NAME\""
     echo "FW_AUTHOR_EMAIL=\"$FW_AUTHOR_EMAIL\""
     echo "FW_AUTHOR_AFFILIATION=\"$FW_AUTHOR_AFFILIATION\""
+    echo "FW_DEFAULT_FORMAT=\"$FW_DEFAULT_FORMAT\""
   } > "$FRAMEWORK_RC"
 
   echo ""
@@ -158,6 +172,7 @@ export FW_USE_RENV="$USE_RENV"
 export FW_AUTHOR_NAME="$FW_AUTHOR_NAME"
 export FW_AUTHOR_EMAIL="$FW_AUTHOR_EMAIL"
 export FW_AUTHOR_AFFILIATION="$FW_AUTHOR_AFFILIATION"
+export FW_DEFAULT_FORMAT="$FW_DEFAULT_FORMAT"
 export FW_NON_INTERACTIVE="true"
 
 # Run init.R
