@@ -82,13 +82,22 @@ fi
 PROJECT_DIR="${1}"
 
 if [ -z "$PROJECT_DIR" ]; then
-  while [ -z "$PROJECT_DIR" ]; do
+  while [ -z "$PROJECT_DIR" ] || [ -d "$PROJECT_DIR" ]; do
     echo -en "${YELLOW}Directory name:${NC} "
     eval "$READ_CMD PROJECT_DIR"
     if [ -z "$PROJECT_DIR" ]; then
       echo -e "${RED}Directory name cannot be empty. Please try again.${NC}"
+    elif [ -d "$PROJECT_DIR" ]; then
+      echo -e "${RED}Error: Directory '$PROJECT_DIR' already exists. Choose a different name.${NC}"
+      PROJECT_DIR=""  # Reset to prompt again
     fi
   done
+else
+  # Check argument immediately
+  if [ -d "$PROJECT_DIR" ]; then
+    echo -e "${RED}Error: Directory '$PROJECT_DIR' already exists${NC}"
+    exit 1
+  fi
 fi
 
 echo ""
@@ -158,12 +167,6 @@ echo -e "${YELLOW}Type:${NC} ${GREEN}$PROJECT_TYPE${NC}"
 echo -e "${YELLOW}renv:${NC} ${GREEN}$([ "$USE_RENV" = "TRUE" ] && echo "enabled" || echo "disabled")${NC}"
 echo -e "${BLUE}────────────────────────────────────────────────────${NC}"
 echo ""
-
-# Check if directory already exists
-if [ -d "$PROJECT_DIR" ]; then
-  echo -e "${RED}Error: Directory '$PROJECT_DIR' already exists${NC}"
-  exit 1
-fi
 
 # Clone the repository
 echo -e "${BLUE}Cloning framework-project template...${NC}"
