@@ -76,6 +76,26 @@ if [ -z "$FW_AUTHOR_NAME" ]; then
 else
   echo -e "${GREEN}Using author: $FW_AUTHOR_NAME${NC}"
   echo ""
+
+  # Check if default format is set, if not prompt for it
+  if [ -z "$FW_DEFAULT_FORMAT" ]; then
+    echo ""
+    echo -e "${YELLOW}Default notebook format:${NC}"
+    echo "  1. Quarto (.qmd) - recommended"
+    echo "  2. RMarkdown (.Rmd)"
+    echo ""
+    echo -en "${YELLOW}Choose format (1-2) [1]:${NC} "
+    eval "$READ_CMD FORMAT_CHOICE"
+
+    case "$FORMAT_CHOICE" in
+      2) FW_DEFAULT_FORMAT="rmarkdown" ;;
+      *) FW_DEFAULT_FORMAT="quarto" ;;
+    esac
+
+    # Update config file with new default format
+    echo "FW_DEFAULT_FORMAT=\"$FW_DEFAULT_FORMAT\"" >> "$FRAMEWORK_RC"
+    echo ""
+  fi
 fi
 
 # Get project name from argument or prompt
@@ -172,7 +192,7 @@ export FW_USE_RENV="$USE_RENV"
 export FW_AUTHOR_NAME="$FW_AUTHOR_NAME"
 export FW_AUTHOR_EMAIL="$FW_AUTHOR_EMAIL"
 export FW_AUTHOR_AFFILIATION="$FW_AUTHOR_AFFILIATION"
-export FW_DEFAULT_FORMAT="$FW_DEFAULT_FORMAT"
+export FW_DEFAULT_FORMAT="${FW_DEFAULT_FORMAT:-quarto}"  # Default to quarto if empty
 export FW_NON_INTERACTIVE="true"
 
 # Run init.R
