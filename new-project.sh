@@ -78,31 +78,31 @@ else
   echo ""
 fi
 
-# Get project name from argument or prompt
-PROJECT_NAME="${1}"
+# Get directory name from argument or prompt
+PROJECT_DIR="${1}"
 
-if [ -z "$PROJECT_NAME" ]; then
-  while [ -z "$PROJECT_NAME" ]; do
-    echo -en "${YELLOW}Project name:${NC} "
-    eval "$READ_CMD PROJECT_NAME"
-    if [ -z "$PROJECT_NAME" ]; then
-      echo -e "${RED}Project name cannot be empty. Please try again.${NC}"
+if [ -z "$PROJECT_DIR" ]; then
+  while [ -z "$PROJECT_DIR" ]; do
+    echo -en "${YELLOW}Directory name:${NC} "
+    eval "$READ_CMD PROJECT_DIR"
+    if [ -z "$PROJECT_DIR" ]; then
+      echo -e "${RED}Directory name cannot be empty. Please try again.${NC}"
     fi
   done
 fi
 
 echo ""
 
-# Slugify project name for default directory
-# Convert to lowercase, replace spaces/special chars with hyphens, remove consecutive hyphens
-PROJECT_SLUG=$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g' | sed 's/--*/-/g' | sed 's/^-//' | sed 's/-$//')
+# Convert directory name to title case as default project name
+# Remove hyphens/underscores, capitalize each word
+PROJECT_NAME_DEFAULT=$(echo "$PROJECT_DIR" | sed 's/[-_]/ /g' | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) tolower(substr($i,2));}1')
 
-# Get directory name (defaults to slugified project name)
-echo -en "${YELLOW}Directory name [$PROJECT_SLUG]:${NC} "
-eval "$READ_CMD PROJECT_DIR"
+# Get project name (the human-readable title)
+echo -en "${YELLOW}Project name [$PROJECT_NAME_DEFAULT]:${NC} "
+eval "$READ_CMD PROJECT_NAME"
 
-if [ -z "$PROJECT_DIR" ]; then
-  PROJECT_DIR="$PROJECT_SLUG"
+if [ -z "$PROJECT_NAME" ]; then
+  PROJECT_NAME="$PROJECT_NAME_DEFAULT"
 fi
 
 echo ""
