@@ -68,6 +68,7 @@ if (fw_non_interactive) {
   # Read from environment variables set by install.sh
   project_name <- Sys.getenv("FW_PROJECT_NAME", "MyProject")
   type <- Sys.getenv("FW_PROJECT_TYPE", "project")
+  use_git <- Sys.getenv("FW_USE_GIT", "TRUE") == "TRUE"
   use_renv <- Sys.getenv("FW_USE_RENV", "FALSE") == "TRUE"
   attach_defaults <- TRUE  # Always use default template with explicit auto_attach settings
 
@@ -162,6 +163,17 @@ if (fw_non_interactive) {
 
   cat("\n")
 
+  # git integration
+  cat("Git version control:\n")
+  cat("  Initialize a git repository for this project?\n")
+  cat("  You can always run 'git init' manually later\n\n")
+
+  use_git_input <- tolower(trimws(readline("Initialize git repository? (y/n) [y]: ")))
+  use_git <- use_git_input != "n" && use_git_input != "no"
+  cat(sprintf("  git: %s\n", if (use_git) "enabled" else "disabled"))
+
+  cat("\n")
+
   # renv integration
   cat("Reproducibility with renv:\n")
   cat("  renv locks package versions for reproducibility\n")
@@ -194,10 +206,12 @@ if (fw_non_interactive) {
   cat("Running in non-interactive mode, using defaults:\n")
   project_name <- "MyProject"
   type <- "project"
+  use_git <- TRUE
   use_renv <- FALSE
   attach_defaults <- TRUE
   cat(sprintf("  Project name: %s\n", project_name))
   cat(sprintf("  Type: %s\n", type))
+  cat(sprintf("  git: %s\n", if (use_git) "enabled" else "disabled"))
   cat(sprintf("  renv: %s\n", if (use_renv) "enabled" else "disabled"))
   cat("  Default packages: yes\n")
 }
@@ -218,6 +232,7 @@ if (!fw_non_interactive) {
 framework::init(
   project_name = project_name,
   type = type,
+  use_git = use_git,
   use_renv = use_renv,
   attach_defaults = attach_defaults,
   author_name = author_name,

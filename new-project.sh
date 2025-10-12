@@ -148,6 +148,19 @@ esac
 
 echo ""
 
+# git
+echo -e "${YELLOW}Initialize git repository? (y/n) [y]:${NC} "
+eval "$READ_CMD USE_GIT_INPUT"
+USE_GIT_INPUT=$(echo "$USE_GIT_INPUT" | tr '[:upper:]' '[:lower:]')
+
+if [ "$USE_GIT_INPUT" = "n" ] || [ "$USE_GIT_INPUT" = "no" ]; then
+  USE_GIT="FALSE"
+else
+  USE_GIT="TRUE"
+fi
+
+echo ""
+
 # renv
 echo -e "${YELLOW}Enable renv for reproducibility? (y/n) [n]:${NC} "
 eval "$READ_CMD USE_RENV_INPUT"
@@ -164,6 +177,7 @@ echo -e "${BLUE}─────────────────────�
 echo -e "${YELLOW}Project name:${NC} ${GREEN}$PROJECT_NAME${NC}"
 echo -e "${YELLOW}Directory:${NC} ${GREEN}$PROJECT_DIR${NC}"
 echo -e "${YELLOW}Type:${NC} ${GREEN}$PROJECT_TYPE${NC}"
+echo -e "${YELLOW}git:${NC} ${GREEN}$([ "$USE_GIT" = "TRUE" ] && echo "enabled" || echo "disabled")${NC}"
 echo -e "${YELLOW}renv:${NC} ${GREEN}$([ "$USE_RENV" = "TRUE" ] && echo "enabled" || echo "disabled")${NC}"
 echo -e "${BLUE}────────────────────────────────────────────────────${NC}"
 echo ""
@@ -186,6 +200,7 @@ echo ""
 # Export variables for init.R to read
 export FW_PROJECT_NAME="$PROJECT_NAME"
 export FW_PROJECT_TYPE="$PROJECT_TYPE"
+export FW_USE_GIT="$USE_GIT"
 export FW_USE_RENV="$USE_RENV"
 export FW_AUTHOR_NAME="$FW_AUTHOR_NAME"
 export FW_AUTHOR_EMAIL="$FW_AUTHOR_EMAIL"
