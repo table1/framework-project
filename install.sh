@@ -11,10 +11,49 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
+# Config file location
+FRAMEWORK_RC="$HOME/.frameworkrc"
+
+# Load existing config if it exists
+if [ -f "$FRAMEWORK_RC" ]; then
+  # shellcheck source=/dev/null
+  source "$FRAMEWORK_RC"
+fi
+
 echo -e "${BLUE}════════════════════════════════════════════════════${NC}"
 echo -e "${BLUE}  Framework Project Installer${NC}"
 echo -e "${BLUE}════════════════════════════════════════════════════${NC}"
 echo ""
+
+# Author information (stored in ~/.frameworkrc)
+if [ -z "$FW_AUTHOR_NAME" ]; then
+  echo -e "${YELLOW}First-time setup: Author information${NC}"
+  echo ""
+  echo -en "${YELLOW}Your name:${NC} "
+  read -r FW_AUTHOR_NAME
+
+  echo -en "${YELLOW}Your email (optional):${NC} "
+  read -r FW_AUTHOR_EMAIL
+
+  echo -en "${YELLOW}Your affiliation (optional):${NC} "
+  read -r FW_AUTHOR_AFFILIATION
+
+  # Save to config file
+  {
+    echo "# Framework configuration"
+    echo "# Edit this file to update your default author information"
+    echo "FW_AUTHOR_NAME=\"$FW_AUTHOR_NAME\""
+    echo "FW_AUTHOR_EMAIL=\"$FW_AUTHOR_EMAIL\""
+    echo "FW_AUTHOR_AFFILIATION=\"$FW_AUTHOR_AFFILIATION\""
+  } > "$FRAMEWORK_RC"
+
+  echo ""
+  echo -e "${GREEN}✓ Saved to $FRAMEWORK_RC${NC}"
+  echo ""
+else
+  echo -e "${GREEN}Using author: $FW_AUTHOR_NAME${NC}"
+  echo ""
+fi
 
 # Get project name from argument or prompt
 PROJECT_NAME="${1}"
@@ -22,7 +61,7 @@ PROJECT_NAME="${1}"
 if [ -z "$PROJECT_NAME" ]; then
   while [ -z "$PROJECT_NAME" ]; do
     echo -en "${YELLOW}Project name:${NC} "
-    read -r PROJECT_NAME </dev/tty
+    read -r PROJECT_NAME
     if [ -z "$PROJECT_NAME" ]; then
       echo -e "${RED}Project name cannot be empty. Please try again.${NC}"
     fi
@@ -37,7 +76,7 @@ PROJECT_SLUG=$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0
 
 # Get directory name (defaults to slugified project name)
 echo -en "${YELLOW}Directory name [$PROJECT_SLUG]:${NC} "
-read -r PROJECT_DIR </dev/tty
+read -r PROJECT_DIR
 
 if [ -z "$PROJECT_DIR" ]; then
   PROJECT_DIR="$PROJECT_SLUG"
@@ -52,7 +91,7 @@ echo "  2. course - Teaching materials"
 echo "  3. presentation - Single talk"
 echo ""
 echo -en "${YELLOW}Choose type (1-3) [1]:${NC} "
-read -r TYPE_CHOICE </dev/tty
+read -r TYPE_CHOICE
 
 case "$TYPE_CHOICE" in
   2) PROJECT_TYPE="course" ;;
@@ -64,7 +103,7 @@ echo ""
 
 # renv
 echo -e "${YELLOW}Enable renv for reproducibility? (y/n) [n]:${NC} "
-read -r USE_RENV_INPUT </dev/tty
+read -r USE_RENV_INPUT
 USE_RENV_INPUT=$(echo "$USE_RENV_INPUT" | tr '[:upper:]' '[:lower:]')
 
 if [ "$USE_RENV_INPUT" = "y" ] || [ "$USE_RENV_INPUT" = "yes" ]; then
@@ -107,6 +146,9 @@ echo ""
 export FW_PROJECT_NAME="$PROJECT_NAME"
 export FW_PROJECT_TYPE="$PROJECT_TYPE"
 export FW_USE_RENV="$USE_RENV"
+export FW_AUTHOR_NAME="$FW_AUTHOR_NAME"
+export FW_AUTHOR_EMAIL="$FW_AUTHOR_EMAIL"
+export FW_AUTHOR_AFFILIATION="$FW_AUTHOR_AFFILIATION"
 export FW_NON_INTERACTIVE="true"
 
 # Run init.R

@@ -50,9 +50,54 @@ if (fw_non_interactive) {
   use_renv <- Sys.getenv("FW_USE_RENV", "FALSE") == "TRUE"
   attach_defaults <- TRUE  # Always use default template with explicit auto_attach settings
 
+  # Author information from ~/.frameworkrc
+  author_name <- Sys.getenv("FW_AUTHOR_NAME", "Your Name")
+  author_email <- Sys.getenv("FW_AUTHOR_EMAIL", "")
+  author_affiliation <- Sys.getenv("FW_AUTHOR_AFFILIATION", "")
+
   # Suppress welcome messages when called from install.sh
   # (install.sh provides its own beautiful output)
 } else if (interactive()) {
+  # Author information (stored in ~/.frameworkrc or ~/_frameworkrc on Windows)
+  frameworkrc <- file.path(Sys.getenv("HOME"), if (.Platform$OS.type == "windows") "_frameworkrc" else ".frameworkrc")
+
+  if (file.exists(frameworkrc)) {
+    # Load existing author info
+    rc_lines <- readLines(frameworkrc, warn = FALSE)
+    author_name <- sub("^FW_AUTHOR_NAME=\"(.*)\"$", "\\1", grep("^FW_AUTHOR_NAME=", rc_lines, value = TRUE))
+    author_email <- sub("^FW_AUTHOR_EMAIL=\"(.*)\"$", "\\1", grep("^FW_AUTHOR_EMAIL=", rc_lines, value = TRUE))
+    author_affiliation <- sub("^FW_AUTHOR_AFFILIATION=\"(.*)\"$", "\\1", grep("^FW_AUTHOR_AFFILIATION=", rc_lines, value = TRUE))
+
+    cat(sprintf("Using author: %s\n", author_name))
+    cat("\n")
+  } else {
+    # First-time setup
+    cat("First-time setup: Author information\n")
+    cat("\n")
+
+    author_name <- readline("Your name: ")
+    if (nchar(trimws(author_name)) == 0) author_name <- "Your Name"
+
+    author_email <- readline("Your email (optional): ")
+
+    author_affiliation <- readline("Your affiliation (optional): ")
+
+    # Save to config file
+    writeLines(
+      c(
+        "# Framework configuration",
+        "# Edit this file to update your default author information",
+        sprintf("FW_AUTHOR_NAME=\"%s\"", author_name),
+        sprintf("FW_AUTHOR_EMAIL=\"%s\"", author_email),
+        sprintf("FW_AUTHOR_AFFILIATION=\"%s\"", author_affiliation)
+      ),
+      frameworkrc
+    )
+
+    cat(sprintf("\n\u2713 Saved to %s\n", frameworkrc))
+    cat("\n")
+  }
+
   # Project name
   project_name <- readline("Project name: ")
   if (nchar(trimws(project_name)) == 0) {
@@ -137,7 +182,10 @@ framework::init(
   project_name = project_name,
   type = type,
   use_renv = use_renv,
-  attach_defaults = attach_defaults
+  attach_defaults = attach_defaults,
+  author_name = author_name,
+  author_email = author_email,
+  author_affiliation = author_affiliation
 )
 
 # ================================================================
