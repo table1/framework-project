@@ -6,14 +6,20 @@ A lightweight R package for structured, reproducible data analysis projects focu
 
 ## Quick Start
 
-### Option 1: Use the Template (Recommended)
+### Option 1: One-Time Script (Easiest)
 
 **One-liner (macOS/Linux/Windows with Git Bash):**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/table1/framework-project/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/table1/framework-project/main/new-project.sh | bash
 ```
 
-**Step-by-step (Windows/no shell):**
+This guides you through creating a new project with interactive prompts. No installation required.
+
+### Option 2: Manual Template Clone
+
+**If you want to customize the template before setup:**
+
+**Step-by-step:**
 
 1. Clone the template (edit `my-project` to your desired name):
 ```bash
@@ -34,13 +40,28 @@ Then in R:
 source("init.R")
 ```
 
-That's it! The script will:
-- Install Framework if needed
-- Ask about project name, type, and configuration
-- Set up your project structure
-- Install default packages if desired
+### Option 3: CLI Tool (For Frequent Project Creation)
 
-### Option 2: Start from Scratch
+If you create Framework projects frequently, install the CLI for a faster workflow:
+
+**One-time setup:**
+```r
+devtools::install_github("table1/framework")
+framework::install_cli()
+```
+
+**Then create projects anywhere:**
+```bash
+framework new myproject
+framework new slides presentation
+framework new                      # Interactive mode
+```
+
+The CLI uses the same `new-project.sh` script as Option 1, ensuring consistency.
+
+### Option 4: Direct R Package Usage
+
+For programmatic project creation or automation:
 
 ```r
 # Install package
