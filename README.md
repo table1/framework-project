@@ -6,18 +6,37 @@ A lightweight R package for structured, reproducible data analysis projects focu
 
 ## Quick Start
 
-### Option 1: One-Time Script (Easiest)
+**Three ways to start:** CLI tool (persistent), one-time script (no installation), or clone the template directly.
+
+### Option 1: CLI Tool
+
+**One-time setup:**
+
+Start R, then:
+```r
+devtools::install_github("table1/framework")
+framework::install_cli()
+```
+
+**Then create projects anywhere:**
+```bash
+framework new myproject
+framework new slides presentation
+framework new                      # Interactive mode
+```
+
+The CLI uses the same `new-project.sh` script as Option 2, ensuring consistency.
+
+### Option 2: One-Time Script (No CLI Installation)
 
 **One-liner (macOS/Linux/Windows with Git Bash):**
 ```bash
 curl -fsSL https://raw.githubusercontent.com/table1/framework-project/main/new-project.sh | bash
 ```
 
-This guides you through creating a new project with interactive prompts. No installation required.
+This guides you through creating a new project without installing the CLI.
 
-### Option 2: Manual Template Clone
-
-**If you want to customize the template before setup:**
+### Option 3: Template From Git
 
 **Step-by-step:**
 
@@ -40,28 +59,7 @@ Then in R:
 source("init.R")
 ```
 
-### Option 3: CLI Tool (For Frequent Project Creation)
-
-If you create Framework projects frequently, install the CLI for a faster workflow:
-
-**One-time setup:**
-```r
-devtools::install_github("table1/framework")
-framework::install_cli()
-```
-
-**Then create projects anywhere:**
-```bash
-framework new myproject
-framework new slides presentation
-framework new                      # Interactive mode
-```
-
-The CLI uses the same `new-project.sh` script as Option 1, ensuring consistency.
-
 ### Option 4: Direct R Package Usage
-
-For programmatic project creation or automation:
 
 ```r
 # Install package
