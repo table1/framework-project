@@ -109,8 +109,8 @@ export FW_PROJECT_TYPE="$PROJECT_TYPE"
 export FW_USE_RENV="$USE_RENV"
 export FW_NON_INTERACTIVE="true"
 
-# Run init.R (suppress all output)
-R --quiet --no-save --slave < init.R > /dev/null 2>&1
+# Run init.R
+R --quiet --no-save --slave < init.R
 
 echo ""
 echo -e "${GREEN}✓ Project '$PROJECT_NAME' created successfully!${NC}"
