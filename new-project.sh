@@ -193,6 +193,13 @@ export FW_AUTHOR_AFFILIATION="$FW_AUTHOR_AFFILIATION"
 export FW_DEFAULT_FORMAT="$PROJECT_DEFAULT_FORMAT"
 export FW_NON_INTERACTIVE="true"
 
+# Pass through FW_DEV_MODE and FW_DEV_PATH if set
+if [ -n "$FW_DEV_MODE" ]; then
+  echo -e "${YELLOW}ℹ${NC}  Dev mode: Using local framework from $FW_DEV_PATH"
+  export FW_DEV_MODE="$FW_DEV_MODE"
+  export FW_DEV_PATH="$FW_DEV_PATH"
+fi
+
 # Run init.R
 R --quiet --no-save --slave < init.R
 

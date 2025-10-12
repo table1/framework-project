@@ -19,8 +19,29 @@ if (Sys.getenv("FW_NON_INTERACTIVE") != "true") {
 # ================================================================
 
 fw_non_interactive_check <- Sys.getenv("FW_NON_INTERACTIVE") == "true"
+fw_dev_mode <- Sys.getenv("FW_DEV_MODE") == "true"
+fw_dev_path <- Sys.getenv("FW_DEV_PATH", "")
 
-if (!requireNamespace("framework", quietly = TRUE)) {
+if (fw_dev_mode && nchar(fw_dev_path) > 0) {
+  # Dev mode: Install from local path
+  if (!fw_non_interactive_check) cat("Dev mode: Installing framework from local path...\n")
+
+  if (!dir.exists(fw_dev_path)) {
+    stop(sprintf("Dev path does not exist: %s", fw_dev_path))
+  }
+
+  # Install devtools if needed
+  if (!requireNamespace("devtools", quietly = TRUE)) {
+    if (!fw_non_interactive_check) cat("  Installing devtools...\n")
+    install.packages("devtools", quiet = TRUE)
+  }
+
+  if (!fw_non_interactive_check) cat(sprintf("  Installing framework from %s...\n", fw_dev_path))
+  devtools::install(fw_dev_path, quiet = TRUE, upgrade = "never")
+  if (!fw_non_interactive_check) cat("  \u2713 Framework installed from local dev path!\n\n")
+
+} else if (!requireNamespace("framework", quietly = TRUE)) {
+  # Normal mode: Install from GitHub
   if (!fw_non_interactive_check) cat("Installing framework package...\n")
 
   # Install devtools if needed
