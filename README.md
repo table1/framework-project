@@ -14,6 +14,7 @@ A lightweight R package for structured, reproducible data analysis projects focu
 
 Start R, then:
 ```r
+# Install Framework and the CLI
 devtools::install_github("table1/framework")
 framework::install_cli()
 ```
@@ -25,7 +26,7 @@ framework new slides presentation
 framework new                      # Interactive mode
 ```
 
-The CLI uses the same `new-project.sh` script as Option 2, ensuring consistency.
+The CLI fetches and runs the latest template script from GitHub, so you're always creating projects with the current version.
 
 ### Option 2: One-Time Script (No CLI Installation)
 
