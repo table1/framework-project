@@ -34,7 +34,7 @@ echo Initializing...
 echo.
 
 REM Run R setup
-R --quiet --no-save -e "if (!requireNamespace('framework', quietly = TRUE)) { cat('Installing Framework package...\n'); if (!requireNamespace('devtools', quietly = TRUE)) { install.packages('devtools', repos = 'https://cloud.r-project.org') }; devtools::install_github('table1/framework') }; framework::init(project_name = '%PROJECT_NAME%', type = '%TYPE%', use_renv = %USE_RENV_R%, attach_defaults = %ATTACH_DEFAULTS_R%)"
+R --quiet --no-save --slave -e "if (!requireNamespace('framework', quietly = TRUE)) { cat('Installing Framework package...\n'); if (!requireNamespace('devtools', quietly = TRUE)) { install.packages('devtools', repos = 'https://cloud.r-project.org') }; devtools::install_github('table1/framework') }; framework::init(project_name = '%PROJECT_NAME%', type = '%TYPE%', use_renv = %USE_RENV_R%, attach_defaults = %ATTACH_DEFAULTS_R%)" 2>&1 | findstr /V /R "^> ^+ ^$"
 
 echo.
 echo Setup complete!

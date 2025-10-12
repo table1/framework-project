@@ -7,35 +7,52 @@
 #
 # ################################################################
 
-cat("\n")
-cat("Welcome to Framework!\n")
-cat("Let's set up your project.\n\n")
+# Only show welcome message if not running from install.sh
+if (Sys.getenv("FW_NON_INTERACTIVE") != "true") {
+  cat("\n")
+  cat("Welcome to Framework!\n")
+  cat("Let's set up your project.\n\n")
+}
 
 # ================================================================
 # STEP 1: Install Framework Package
 # ================================================================
 
+fw_non_interactive_check <- Sys.getenv("FW_NON_INTERACTIVE") == "true"
+
 if (!requireNamespace("framework", quietly = TRUE)) {
-  cat("Installing framework package...\n")
+  if (!fw_non_interactive_check) cat("Installing framework package...\n")
 
   # Install devtools if needed
   if (!requireNamespace("devtools", quietly = TRUE)) {
-    cat("  Installing devtools...\n")
+    if (!fw_non_interactive_check) cat("  Installing devtools...\n")
     install.packages("devtools", quiet = TRUE)
   }
 
-  cat("  Installing framework from GitHub...\n")
+  if (!fw_non_interactive_check) cat("  Installing framework from GitHub...\n")
   devtools::install_github("table1/framework", quiet = TRUE)
-  cat("  \u2713 Framework installed!\n\n")
+  if (!fw_non_interactive_check) cat("  \u2713 Framework installed!\n\n")
 } else {
-  cat("\u2713 Framework package already installed\n\n")
+  if (!fw_non_interactive_check) cat("\u2713 Framework package already installed\n\n")
 }
 
 # ================================================================
 # STEP 2: Interactive Configuration
 # ================================================================
 
-if (interactive()) {
+# Check if running from install.sh (non-interactive bash script)
+fw_non_interactive <- Sys.getenv("FW_NON_INTERACTIVE") == "true"
+
+if (fw_non_interactive) {
+  # Read from environment variables set by install.sh
+  project_name <- Sys.getenv("FW_PROJECT_NAME", "MyProject")
+  type <- Sys.getenv("FW_PROJECT_TYPE", "project")
+  use_renv <- Sys.getenv("FW_USE_RENV", "FALSE") == "TRUE"
+  attach_defaults <- TRUE  # Always use default template with explicit auto_attach settings
+
+  # Suppress welcome messages when called from install.sh
+  # (install.sh provides its own beautiful output)
+} else if (interactive()) {
   # Project name
   project_name <- readline("Project name: ")
   if (nchar(trimws(project_name)) == 0) {
@@ -103,12 +120,14 @@ if (interactive()) {
   cat("  Default packages: yes\n")
 }
 
-cat("\n")
-cat(strrep("=", 60))
-cat("\n")
-cat("Initializing project...\n")
-cat(strrep("=", 60))
-cat("\n\n")
+if (!fw_non_interactive) {
+  cat("\n")
+  cat(strrep("=", 60))
+  cat("\n")
+  cat("Initializing project...\n")
+  cat(strrep("=", 60))
+  cat("\n\n")
+}
 
 # ================================================================
 # STEP 3: Run Initialization
@@ -125,16 +144,18 @@ framework::init(
 # STEP 4: Next Steps
 # ================================================================
 
-cat("\n")
-cat(strrep("=", 60))
-cat("\n")
-cat("Next Steps:\n")
-cat(strrep("=", 60))
-cat("\n\n")
-cat("1. Start a new R session in this directory\n")
-cat("2. Run:\n")
-cat("     library(framework)\n")
-cat("     scaffold()\n")
-cat("3. Start analyzing!\n\n")
-cat("Tip: The init.R file has been archived to .init.R.done\n")
-cat("     for your records. You can safely delete it.\n\n")
+if (!fw_non_interactive) {
+  cat("\n")
+  cat(strrep("=", 60))
+  cat("\n")
+  cat("Next Steps:\n")
+  cat(strrep("=", 60))
+  cat("\n\n")
+  cat("1. Start a new R session in this directory\n")
+  cat("2. Run:\n")
+  cat("     library(framework)\n")
+  cat("     scaffold()\n")
+  cat("3. Start analyzing!\n\n")
+  cat("Tip: The init.R file has been archived to .init.R.done\n")
+  cat("     for your records. You can safely delete it.\n\n")
+}

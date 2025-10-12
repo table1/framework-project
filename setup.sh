@@ -33,7 +33,7 @@ echo -e "${BLUE}Initializing...${NC}"
 echo ""
 
 # Check if Framework is installed, if not install it
-R --quiet --no-save -e "
+R --quiet --no-save --slave <<'RCODE' 2>&1 | grep -v "^>" | grep -v "^+" | grep -v "^$" | grep -v "^ *$"
 if (!requireNamespace('framework', quietly = TRUE)) {
   cat('Installing Framework package...\n')
   if (!requireNamespace('devtools', quietly = TRUE)) {
@@ -48,7 +48,7 @@ framework::init(
   use_renv = $USE_RENV_R,
   attach_defaults = $ATTACH_DEFAULTS_R
 )
-"
+RCODE
 
 echo ""
 echo -e "${GREEN}✓ Setup complete!${NC}"
