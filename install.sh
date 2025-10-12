@@ -11,6 +11,15 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
+# Detect if stdin is a terminal (for interactive mode)
+if [ -t 0 ]; then
+  # Running interactively (e.g., ./install.sh)
+  READ_CMD="read -r"
+else
+  # Being piped (e.g., curl | bash) - redirect input from terminal
+  READ_CMD="read -r </dev/tty"
+fi
+
 # Config file location
 FRAMEWORK_RC="$HOME/.frameworkrc"
 
@@ -30,13 +39,13 @@ if [ -z "$FW_AUTHOR_NAME" ]; then
   echo -e "${YELLOW}First-time setup: Author information${NC}"
   echo ""
   echo -en "${YELLOW}Your name:${NC} "
-  read -r FW_AUTHOR_NAME
+  eval "$READ_CMD FW_AUTHOR_NAME"
 
   echo -en "${YELLOW}Your email (optional):${NC} "
-  read -r FW_AUTHOR_EMAIL
+  eval "$READ_CMD FW_AUTHOR_EMAIL"
 
   echo -en "${YELLOW}Your affiliation (optional):${NC} "
-  read -r FW_AUTHOR_AFFILIATION
+  eval "$READ_CMD FW_AUTHOR_AFFILIATION"
 
   # Save to config file
   {
@@ -61,7 +70,7 @@ PROJECT_NAME="${1}"
 if [ -z "$PROJECT_NAME" ]; then
   while [ -z "$PROJECT_NAME" ]; do
     echo -en "${YELLOW}Project name:${NC} "
-    read -r PROJECT_NAME
+    eval "$READ_CMD PROJECT_NAME"
     if [ -z "$PROJECT_NAME" ]; then
       echo -e "${RED}Project name cannot be empty. Please try again.${NC}"
     fi
@@ -76,7 +85,7 @@ PROJECT_SLUG=$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0
 
 # Get directory name (defaults to slugified project name)
 echo -en "${YELLOW}Directory name [$PROJECT_SLUG]:${NC} "
-read -r PROJECT_DIR
+eval "$READ_CMD PROJECT_DIR"
 
 if [ -z "$PROJECT_DIR" ]; then
   PROJECT_DIR="$PROJECT_SLUG"
@@ -91,7 +100,7 @@ echo "  2. course - Teaching materials"
 echo "  3. presentation - Single talk"
 echo ""
 echo -en "${YELLOW}Choose type (1-3) [1]:${NC} "
-read -r TYPE_CHOICE
+eval "$READ_CMD TYPE_CHOICE"
 
 case "$TYPE_CHOICE" in
   2) PROJECT_TYPE="course" ;;
@@ -103,7 +112,7 @@ echo ""
 
 # renv
 echo -e "${YELLOW}Enable renv for reproducibility? (y/n) [n]:${NC} "
-read -r USE_RENV_INPUT
+eval "$READ_CMD USE_RENV_INPUT"
 USE_RENV_INPUT=$(echo "$USE_RENV_INPUT" | tr '[:upper:]' '[:lower:]')
 
 if [ "$USE_RENV_INPUT" = "y" ] || [ "$USE_RENV_INPUT" = "yes" ]; then

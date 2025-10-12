@@ -3,6 +3,41 @@ REM Framework setup script for Windows
 REM Usage: setup.bat [project_name] [type] [use_renv] [attach_defaults]
 REM Example: setup.bat "My Project" project n y
 
+REM Check for author config file (~/_frameworkrc on Windows)
+set "FRAMEWORKRC=%USERPROFILE%\_frameworkrc"
+
+if exist "%FRAMEWORKRC%" (
+    echo Loading author information from %FRAMEWORKRC%
+    for /f "usebackq tokens=1,* delims==" %%a in ("%FRAMEWORKRC%") do (
+        if "%%a"=="FW_AUTHOR_NAME" set "AUTHOR_NAME=%%b"
+        if "%%a"=="FW_AUTHOR_EMAIL" set "AUTHOR_EMAIL=%%b"
+        if "%%a"=="FW_AUTHOR_AFFILIATION" set "AUTHOR_AFFILIATION=%%b"
+    )
+    REM Remove quotes from values
+    set AUTHOR_NAME=%AUTHOR_NAME:"=%
+    set AUTHOR_EMAIL=%AUTHOR_EMAIL:"=%
+    set AUTHOR_AFFILIATION=%AUTHOR_AFFILIATION:"=%
+) else (
+    echo First-time setup: Author information
+    echo.
+    set /p "AUTHOR_NAME=Your name: "
+    set /p "AUTHOR_EMAIL=Your email (optional): "
+    set /p "AUTHOR_AFFILIATION=Your affiliation (optional): "
+
+    REM Save to config file
+    (
+        echo # Framework configuration
+        echo # Edit this file to update your default author information
+        echo FW_AUTHOR_NAME="%AUTHOR_NAME%"
+        echo FW_AUTHOR_EMAIL="%AUTHOR_EMAIL%"
+        echo FW_AUTHOR_AFFILIATION="%AUTHOR_AFFILIATION%"
+    ) > "%FRAMEWORKRC%"
+
+    echo.
+    echo Saved to %FRAMEWORKRC%
+    echo.
+)
+
 REM Default values
 set "PROJECT_NAME=%~1"
 if "%PROJECT_NAME%"=="" set "PROJECT_NAME=MyProject"
@@ -25,6 +60,7 @@ echo   Framework Project Setup
 echo ====================================================
 echo.
 echo Configuration:
+echo   Author: %AUTHOR_NAME%
 echo   Project name: %PROJECT_NAME%
 echo   Type: %TYPE%
 if /i "%USE_RENV%"=="y" (echo   renv: enabled) else (echo   renv: disabled)
@@ -33,8 +69,8 @@ echo.
 echo Initializing...
 echo.
 
-REM Run R setup
-R --quiet --no-save --slave -e "if (!requireNamespace('framework', quietly = TRUE)) { cat('Installing Framework package...\n'); if (!requireNamespace('devtools', quietly = TRUE)) { install.packages('devtools', repos = 'https://cloud.r-project.org') }; devtools::install_github('table1/framework') }; framework::init(project_name = '%PROJECT_NAME%', type = '%TYPE%', use_renv = %USE_RENV_R%, attach_defaults = %ATTACH_DEFAULTS_R%)" 2>&1 | findstr /V /R "^> ^+ ^$"
+REM Run R setup with author information
+R --quiet --no-save --slave -e "if (!requireNamespace('framework', quietly = TRUE)) { cat('Installing Framework package...\n'); if (!requireNamespace('devtools', quietly = TRUE)) { install.packages('devtools', repos = 'https://cloud.r-project.org') }; devtools::install_github('table1/framework') }; framework::init(project_name = '%PROJECT_NAME%', type = '%TYPE%', use_renv = %USE_RENV_R%, attach_defaults = %ATTACH_DEFAULTS_R%, author_name = '%AUTHOR_NAME%', author_email = '%AUTHOR_EMAIL%', author_affiliation = '%AUTHOR_AFFILIATION%')" 2>&1 | findstr /V /R "^> ^+ ^$"
 
 echo.
 echo Setup complete!
