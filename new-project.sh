@@ -230,3 +230,6 @@ echo -e "  ${GREEN}library(framework)${NC}"
 echo -e "  ${GREEN}scaffold()${NC}"
 echo ""
 echo -e "${BLUE}ℹ${NC}  For project types, renv, and other options, see README.md"
+
+# Clean up: remove the installer script
+rm -f new-project.sh
