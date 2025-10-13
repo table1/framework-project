@@ -192,6 +192,9 @@ cd "$PROJECT_DIR"
 # Remove .git directory
 rm -rf .git
 
+# Clean up development files
+rm -f CLAUDE.md .styler.R
+
 # Run setup by calling init.R with environment variables
 echo ""
 echo -e "${BLUE}Initializing project...${NC}"

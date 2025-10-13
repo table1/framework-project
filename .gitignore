@@ -20,3 +20,7 @@ vignettes/*.pdf
 
 # README build system (for maintainers only)
 readme-parts/
+
+# Development files (for maintainers only)
+CLAUDE.md
+.styler.R
