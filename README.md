@@ -85,7 +85,6 @@ Framework reduces boilerplate and enforces best practices for data analysis:
 - **Optional renv integration** - Reproducible package management (opt-in)
 - **Caching** - Smart caching for expensive computations
 - **Database helpers** - PostgreSQL, SQLite with credential management
-- **Results tracking** - Save/retrieve analysis outputs with blinding support
 - **Supported formats** - CSV, TSV, RDS, Stata (.dta), SPSS (.sav), SAS (.xpt, .sas7bdat)
 
 ## What Gets Created
