@@ -38,7 +38,7 @@ cat << 'EOF'
 EOF
 echo -e "${NC}"
 echo -e "${BLUE}════════════════════════════════════════════════════${NC}"
-echo -e "${BLUE}  Framework Project Installer${NC}"
+echo -e "${BLUE}  Project Installer${NC}"
 echo -e "${BLUE}════════════════════════════════════════════════════${NC}"
 echo ""
 
