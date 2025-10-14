@@ -31,12 +31,6 @@ fi
 COMMAND="${1:-help}"
 
 case "$COMMAND" in
-  scaffold)
-    # Run scaffold() in the project context
-    shift
-    Rscript --quiet --no-save -e "library(framework); scaffold()"
-    ;;
-
   make:notebook)
     # Create a new notebook (Laravel-style)
     shift
@@ -134,8 +128,6 @@ case "$COMMAND" in
 
   help|--help|-h)
     printf "${BLUE}Framework CLI - Project Commands${NC}\n\n"
-    printf "${YELLOW}Usage:${NC}\n"
-    printf "  framework scaffold                  Initialize project environment\n\n"
     printf "${YELLOW}Make Commands:${NC}\n"
     printf "  framework make:notebook [name]      Create notebook (Quarto/RMarkdown)\n"
     printf "  framework make:quarto [name]        Create Quarto notebook (.qmd)\n"
@@ -149,7 +141,6 @@ case "$COMMAND" in
     printf "  framework configure:packages        Add package dependency\n"
     printf "  framework configure:directories     Configure project directories\n\n"
     printf "${YELLOW}Examples:${NC}\n"
-    printf "  framework scaffold                  ${GREEN}# Load environment, install packages${NC}\n"
     printf "  framework make:notebook analysis    ${GREEN}# Create notebooks/analysis.qmd${NC}\n"
     printf "  framework make:script process       ${GREEN}# Create scripts/process.R${NC}\n"
     printf "  framework configure:author          ${GREEN}# Set your name and affiliation${NC}\n\n"
@@ -163,7 +154,6 @@ case "$COMMAND" in
     # Unknown command - suggest they might want framework-global
     printf "${YELLOW}Unknown project command: ${NC}$COMMAND\n\n"
     printf "Project commands:\n"
-    printf "  scaffold\n"
     printf "  make:notebook, make:quarto, make:rmd, make:script, make:presentation\n"
     printf "  configure:data, configure:connection, configure:author, configure:packages, configure:directories\n"
     printf "  help\n\n"
