@@ -7,10 +7,10 @@ A lightweight R package for structured, reproducible data analysis projects focu
 ## Quick Start
 
 **Preview:** During setup, you'll be asked to choose:
-- **Project type** - `project` (full-featured), `course` (teaching), or `presentation` (single talk)
-- **Notebook format** - Quarto `.qmd` (recommended) or RMarkdown `.Rmd`
-- **Git** - Whether to initialize a `git` repository
-- **Package management** - Whether to use renv for package management
+- **Project type**: `project` (full-featured), `course` (teaching), or `presentation` (single talk)
+- **Notebook format**: Quarto `.qmd` (recommended) or RMarkdown `.Rmd`
+- **Git**: Whether to initialize a `git` repository
+- **Package management**: Whether to use renv for package management
 
 Not sure? Choose the defaults. You can always change these later in `config.yml`.
 
@@ -23,7 +23,7 @@ curl -fsSL https://raw.githubusercontent.com/table1/framework/main/inst/bin/inst
 # Create projects
 framework new myproject
 framework new slides presentation
-framework new                      # Interactive
+framework new
 ```
 
 See [Command Line Interface](#command-line-interface) for full details.
@@ -69,7 +69,7 @@ source("init.R")
 - **course**: Teaching materials with presentations, student notebooks, and example data
 - **presentation**: Single talks or presentations with minimal overhead: just data, helper functions, and output
 
-**Not sure?** Use `type = "project"` - it's the most flexible.
+**Not sure?** Use `type = "project"`. You can always delete directories you don't need; you won't break anything.
 
 **Example structure:**
 
@@ -94,24 +94,24 @@ project/
 
 Framework reduces boilerplate and enforces best practices for data analysis:
 
-- **Project scaffolding** - Standardized directories, config-driven setup
-- **Data management** - Declarative data catalog, integrity tracking, encryption (on roadmap)
-- **Auto-loading** - Load the packages you use in every file with one command; no more file juggling with your `library()` calls
-- **Optional renv integration** - Use `renv` for reproducible package management without having to fight `renv` or babysit it.
-- **Caching** - Smart caching for expensive computations
-- **Database helpers** - PostgreSQL, SQLite with credential management
-- **Supported file formats** - CSV, TSV, RDS, Stata (.dta), SPSS (.sav), SAS (.xpt, .sas7bdat)
+- **Project scaffolding**: Standardized directories, config-driven setup
+- **Data management**: Declarative data catalog, integrity tracking, encryption (on roadmap)
+- **Auto-loading**: Load the packages you use in every file with one command; no more file juggling with your `library()` calls
+- **Pain-free `renv` integration**: Use `renv` for reproducible package management without having to fight `renv` or babysit it.
+- **Caching**: Smart caching for expensive computations
+- **Database helpers**: PostgreSQL, SQLite with credential management
+- **Supported file formats**: CSV, TSV, RDS, Stata (.dta), SPSS (.sav), SAS (.xpt, .sas7bdat)
 
 ## What Gets Created
 
 When you run `init()`, Framework creates:
 
-- **Project structure** - Organized directories (varies by type)
-- **Configuration files** - `config.yml` and optional `settings/` files
-- **Git setup** - `.gitignore` configured to protect private data
-- **Tooling** - `.lintr`, `.styler.R`, `.editorconfig` for code quality
-- **Database** - `framework.db` for metadata tracking
-- **Environment** - `.env` template for secrets
+- **Project structure**: Organized directories (varies by type)
+- **Configuration files**: `config.yml` and optional `settings/` files
+- **Git setup**: `.gitignore` configured to protect private data
+- **Tooling**: `.lintr`, `.styler.R`, `.editorconfig` for code quality
+- **Database**: `framework.db` for metadata tracking
+- **Environment**: `.env` template for secrets
 
 ## Core Workflow
 
