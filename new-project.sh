@@ -29,6 +29,14 @@ if [ -f "$FRAMEWORK_RC" ]; then
   source "$FRAMEWORK_RC"
 fi
 
+echo -e "${BLUE}"
+cat << 'EOF'
+▗▄▄▄▖▗▄▄▖  ▗▄▖ ▗▖  ▗▖▗▄▄▄▖▗▖ ▗▖ ▗▄▖ ▗▄▄▖ ▗▖ ▗▖
+▐▌   ▐▌ ▐▌▐▌ ▐▌▐▛▚▞▜▌▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌▐▌▗▞▘
+▐▛▀▀▘▐▛▀▚▖▐▛▀▜▌▐▌  ▐▌▐▛▀▀▘▐▌ ▐▌▐▌ ▐▌▐▛▀▚▖▐▛▚▖
+▐▌   ▐▌ ▐▌▐▌ ▐▌▐▌  ▐▌▐▙▄▄▖▐▙█▟▌▝▚▄▞▘▐▌ ▐▌▐▌ ▐▌
+EOF
+echo -e "${NC}"
 echo -e "${BLUE}════════════════════════════════════════════════════${NC}"
 echo -e "${BLUE}  Framework Project Installer${NC}"
 echo -e "${BLUE}════════════════════════════════════════════════════${NC}"
@@ -38,7 +46,7 @@ echo ""
 if [ -z "$FW_AUTHOR_NAME" ]; then
   echo -e "${YELLOW}First-time setup: Author information${NC}"
   echo ""
-  echo -en "${YELLOW}Your name:${NC} "
+  echo -en "${YELLOW}Your name (optional):${NC} "
   eval "$READ_CMD FW_AUTHOR_NAME"
 
   echo -en "${YELLOW}Your email (optional):${NC} "
