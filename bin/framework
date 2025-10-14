@@ -63,17 +63,96 @@ case "$COMMAND" in
     fi
     ;;
 
+  make:quarto)
+    # Create a Quarto notebook explicitly
+    shift
+    NAME="${1}"
+
+    if [ -z "$NAME" ]; then
+      printf "${BLUE}Creating new Quarto notebook...${NC}\n"
+      Rscript --quiet --no-save -e "library(framework); make_qmd()"
+    else
+      Rscript --quiet --no-save -e "library(framework); make_qmd('$NAME')"
+    fi
+    ;;
+
+  make:rmd)
+    # Create an RMarkdown notebook explicitly
+    shift
+    NAME="${1}"
+
+    if [ -z "$NAME" ]; then
+      printf "${BLUE}Creating new RMarkdown notebook...${NC}\n"
+      Rscript --quiet --no-save -e "library(framework); make_rmd()"
+    else
+      Rscript --quiet --no-save -e "library(framework); make_rmd('$NAME')"
+    fi
+    ;;
+
+  make:presentation)
+    # Create a reveal.js presentation
+    shift
+    NAME="${1}"
+
+    if [ -z "$NAME" ]; then
+      printf "${BLUE}Creating new presentation...${NC}\n"
+      Rscript --quiet --no-save -e "library(framework); make_presentation()"
+    else
+      Rscript --quiet --no-save -e "library(framework); make_presentation('$NAME')"
+    fi
+    ;;
+
+  configure:data)
+    # Add data source to config
+    shift
+    Rscript --quiet --no-save -e "library(framework); configure_data()"
+    ;;
+
+  configure:connection)
+    # Add database connection to config
+    shift
+    Rscript --quiet --no-save -e "library(framework); configure_connection()"
+    ;;
+
+  configure:author)
+    # Set author information in config
+    shift
+    Rscript --quiet --no-save -e "library(framework); configure_author()"
+    ;;
+
+  configure:packages)
+    # Add package dependency to config
+    shift
+    Rscript --quiet --no-save -e "library(framework); configure_packages()"
+    ;;
+
+  configure:directories)
+    # Configure project directories
+    shift
+    Rscript --quiet --no-save -e "library(framework); configure_directories()"
+    ;;
+
   help|--help|-h)
     printf "${BLUE}Framework CLI - Project Commands${NC}\n\n"
     printf "${YELLOW}Usage:${NC}\n"
-    printf "  framework scaffold             Initialize project environment\n"
-    printf "  framework make:notebook [name] Create new notebook\n"
-    printf "  framework make:script [name]   Create new script\n"
-    printf "  framework help                 Show this help\n\n"
+    printf "  framework scaffold                  Initialize project environment\n\n"
+    printf "${YELLOW}Make Commands:${NC}\n"
+    printf "  framework make:notebook [name]      Create notebook (Quarto/RMarkdown)\n"
+    printf "  framework make:quarto [name]        Create Quarto notebook (.qmd)\n"
+    printf "  framework make:rmd [name]           Create RMarkdown notebook (.Rmd)\n"
+    printf "  framework make:script [name]        Create R script (.R)\n"
+    printf "  framework make:presentation [name]  Create reveal.js presentation\n\n"
+    printf "${YELLOW}Configure Commands:${NC}\n"
+    printf "  framework configure:data            Add data source to config\n"
+    printf "  framework configure:connection      Add database connection\n"
+    printf "  framework configure:author          Set author information\n"
+    printf "  framework configure:packages        Add package dependency\n"
+    printf "  framework configure:directories     Configure project directories\n\n"
     printf "${YELLOW}Examples:${NC}\n"
-    printf "  framework scaffold             ${GREEN}# Load environment, install packages${NC}\n"
-    printf "  framework make:notebook analysis ${GREEN}# Create notebooks/analysis.qmd${NC}\n"
-    printf "  framework make:script process  ${GREEN}# Create scripts/process.R${NC}\n\n"
+    printf "  framework scaffold                  ${GREEN}# Load environment, install packages${NC}\n"
+    printf "  framework make:notebook analysis    ${GREEN}# Create notebooks/analysis.qmd${NC}\n"
+    printf "  framework make:script process       ${GREEN}# Create scripts/process.R${NC}\n"
+    printf "  framework configure:author          ${GREEN}# Set your name and affiliation${NC}\n\n"
     printf "${YELLOW}Global Commands:${NC}\n"
     printf "  To use global commands (new, version, update), run from outside this project.\n\n"
     printf "${YELLOW}More Information:${NC}\n"
@@ -84,7 +163,10 @@ case "$COMMAND" in
     # Unknown command - suggest they might want framework-global
     printf "${YELLOW}Unknown project command: ${NC}$COMMAND\n\n"
     printf "Project commands:\n"
-    printf "  scaffold, make:notebook, make:script, help\n\n"
+    printf "  scaffold\n"
+    printf "  make:notebook, make:quarto, make:rmd, make:script, make:presentation\n"
+    printf "  configure:data, configure:connection, configure:author, configure:packages, configure:directories\n"
+    printf "  help\n\n"
     printf "Did you mean a global command? Run from outside the project:\n"
     printf "  framework new, version, update\n"
     exit 1
