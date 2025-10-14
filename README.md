@@ -9,28 +9,24 @@ A lightweight R package for structured, reproducible data analysis projects focu
 **Preview:** During setup, you'll be asked to choose:
 - **Project type** - `project` (full-featured), `course` (teaching), or `presentation` (single talk)
 - **Notebook format** - Quarto `.qmd` (recommended) or RMarkdown `.Rmd`
-- **Package management** - Whether to renv for reproducibility or standard R packages
+- **Git** - Whether to initialize a `git` repository
+- **Package management** - Whether to use renv for package management
 
-Not sure? The defaults work great. You can always change these later in `config.yml`.
+Not sure? Choose the defaults. You can always change these later in `config.yml`.
 
 ### Option 1: CLI Tool (Recommended)
 
-**One-command install:**
-
 ```bash
+# Install
 curl -fsSL https://raw.githubusercontent.com/table1/framework/main/inst/bin/install-cli.sh | bash
-```
 
-This installs both the Framework R package and the CLI tool, and sets up your PATH.
-
-**Then create projects anywhere:**
-```bash
+# Create projects
 framework new myproject
 framework new slides presentation
-framework new                      # Interactive mode
+framework new                      # Interactive
 ```
 
-The CLI fetches and runs the latest template script from GitHub, so you're always creating projects with the current version.
+See [Command Line Interface](#command-line-interface) for full details.
 
 ### Option 2: One-Time Script (No CLI Installation)
 
@@ -55,12 +51,12 @@ cd my-project
 ```r
 framework::init(
   project_name = "MyProject",
-  type = "project",        # or "course" or "presentation"
+  type = "project",                                  # or "course" or "presentation"
   use_renv = FALSE,
   default_notebook_format = "quarto",
-  author_name = "Your Name",  # Optional
-  author_email = "email@example.com",  # Optional
-  author_affiliation = "Johns Hopkins University"  # Optional
+  author_name = "Your Name",                         # Allows auto-filling Notebook author (optional)
+  author_email = "email@example.com", 
+  author_affiliation = "Johns Hopkins University"  
 )
 
 # Then run your code from your IDE. Or save your changes and run:
@@ -69,36 +65,13 @@ source("init.R")
 
 ### Project Types
 
-- **project** (default): Full-featured with `notebooks/`, `scripts/`, `data/` (public/private splits), `results/`, `functions/`, `docs/`
-- **course**: For teaching with `presentations/`, `notebooks/`, `data/`, `functions/`, `docs/`
-- **presentation**: Minimal for single talks with `data/`, `functions/`, `results/`
+- **project** (default): Full-featured research projects with exploratory notebooks, production scripts, organized data management, and documentation
+- **course**: Teaching materials with presentations, student notebooks, and example data
+- **presentation**: Single talks or presentations with minimal overhead: just data, helper functions, and output
 
 **Not sure?** Use `type = "project"` - it's the most flexible.
 
-## What It Does
-
-Framework reduces boilerplate and enforces best practices for data analysis:
-
-- **Project scaffolding** - Standardized directories, config-driven setup
-- **Data management** - Declarative data catalog, integrity tracking, encryption
-- **Auto-loading** - Packages and custom functions loaded automatically
-- **Optional renv integration** - Reproducible package management (opt-in)
-- **Caching** - Smart caching for expensive computations
-- **Database helpers** - PostgreSQL, SQLite with credential management
-- **Supported formats** - CSV, TSV, RDS, Stata (.dta), SPSS (.sav), SAS (.xpt, .sas7bdat)
-
-## What Gets Created
-
-When you run `init()`, Framework creates:
-
-- **Project structure** - Organized directories (varies by type)
-- **Configuration files** - `config.yml` and optional `settings/` files
-- **Git setup** - `.gitignore` configured to protect private data
-- **Tooling** - `.lintr`, `.styler.R`, `.editorconfig` for code quality
-- **Database** - `framework.db` for metadata tracking
-- **Environment** - `.env` template for secrets
-
-### Example: Project Type Structure
+**Example structure:**
 
 ```
 project/
@@ -116,6 +89,29 @@ project/
 ├── framework.db            # Metadata/tracking database
 └── .env                    # Secrets (gitignored)
 ```
+
+## Why Use Framework?
+
+Framework reduces boilerplate and enforces best practices for data analysis:
+
+- **Project scaffolding** - Standardized directories, config-driven setup
+- **Data management** - Declarative data catalog, integrity tracking, encryption (on roadmap)
+- **Auto-loading** - Load the packages you use in every file with one command; no more file juggling with your `library()` calls
+- **Optional renv integration** - Use `renv` for reproducible package management without having to fight `renv` or babysit it.
+- **Caching** - Smart caching for expensive computations
+- **Database helpers** - PostgreSQL, SQLite with credential management
+- **Supported file formats** - CSV, TSV, RDS, Stata (.dta), SPSS (.sav), SAS (.xpt, .sas7bdat)
+
+## What Gets Created
+
+When you run `init()`, Framework creates:
+
+- **Project structure** - Organized directories (varies by type)
+- **Configuration files** - `config.yml` and optional `settings/` files
+- **Git setup** - `.gitignore` configured to protect private data
+- **Tooling** - `.lintr`, `.styler.R`, `.editorconfig` for code quality
+- **Database** - `framework.db` for metadata tracking
+- **Environment** - `.env` template for secrets
 
 ## Core Workflow
 

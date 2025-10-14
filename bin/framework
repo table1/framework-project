@@ -37,61 +37,43 @@ case "$COMMAND" in
     Rscript --quiet --no-save -e "library(framework); scaffold()"
     ;;
 
-  notebook|nb)
-    # Create a new notebook
+  make:notebook)
+    # Create a new notebook (Laravel-style)
     shift
     NAME="${1}"
-    TYPE="${2:-quarto}"
 
     if [ -z "$NAME" ]; then
       printf "${BLUE}Creating new notebook...${NC}\n"
       Rscript --quiet --no-save -e "library(framework); make_notebook()"
     else
-      Rscript --quiet --no-save -e "library(framework); make_notebook('$NAME', format='$TYPE')"
+      Rscript --quiet --no-save -e "library(framework); make_notebook('$NAME')"
     fi
     ;;
 
-  status)
-    # Show project status
-    printf "${BLUE}Framework Project Status${NC}\n\n"
-    printf "${YELLOW}Project Root:${NC} $PWD\n"
+  make:script)
+    # Create a new script (Laravel-style)
+    shift
+    NAME="${1}"
 
-    # Check if scaffolded
-    if [ -f ".framework_scaffolded" ]; then
-      printf "${GREEN}✓ Scaffolded${NC}\n"
-      tail -1 .framework_scaffolded
+    if [ -z "$NAME" ]; then
+      printf "${BLUE}Creating new script...${NC}\n"
+      Rscript --quiet --no-save -e "library(framework); make_script()"
     else
-      printf "${YELLOW}⚠ Not scaffolded yet${NC}\n"
-      printf "  Run: framework scaffold\n"
+      Rscript --quiet --no-save -e "library(framework); make_script('$NAME')"
     fi
-
-    # Check git status
-    if [ -d ".git" ]; then
-      printf "\n${YELLOW}Git Status:${NC}\n"
-      git status -s | head -10
-      CHANGES=$(git status -s | wc -l | tr -d ' ')
-      if [ "$CHANGES" -gt 10 ]; then
-        printf "  ... and $((CHANGES - 10)) more files\n"
-      fi
-    fi
-
-    # Show Framework version
-    printf "\n${YELLOW}Framework Version:${NC} "
-    Rscript --quiet --no-save -e "cat(as.character(packageVersion('framework')))"
-    printf "\n"
     ;;
 
   help|--help|-h)
-    printf "${BLUE}Framework CLI - Project-Local Commands${NC}\n\n"
+    printf "${BLUE}Framework CLI - Project Commands${NC}\n\n"
     printf "${YELLOW}Usage:${NC}\n"
     printf "  framework scaffold             Initialize project environment\n"
-    printf "  framework notebook [name]      Create new notebook\n"
-    printf "  framework status               Show project status\n"
+    printf "  framework make:notebook [name] Create new notebook\n"
+    printf "  framework make:script [name]   Create new script\n"
     printf "  framework help                 Show this help\n\n"
     printf "${YELLOW}Examples:${NC}\n"
     printf "  framework scaffold             ${GREEN}# Load environment, install packages${NC}\n"
-    printf "  framework notebook analysis    ${GREEN}# Create analysis.qmd${NC}\n"
-    printf "  framework status               ${GREEN}# Check project state${NC}\n\n"
+    printf "  framework make:notebook analysis ${GREEN}# Create notebooks/analysis.qmd${NC}\n"
+    printf "  framework make:script process  ${GREEN}# Create scripts/process.R${NC}\n\n"
     printf "${YELLOW}Global Commands:${NC}\n"
     printf "  To use global commands (new, version, update), run from outside this project.\n\n"
     printf "${YELLOW}More Information:${NC}\n"
@@ -102,7 +84,7 @@ case "$COMMAND" in
     # Unknown command - suggest they might want framework-global
     printf "${YELLOW}Unknown project command: ${NC}$COMMAND\n\n"
     printf "Project commands:\n"
-    printf "  scaffold, notebook, status, help\n\n"
+    printf "  scaffold, make:notebook, make:script, help\n\n"
     printf "Did you mean a global command? Run from outside the project:\n"
     printf "  framework new, version, update\n"
     exit 1
