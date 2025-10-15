@@ -23,10 +23,32 @@ fi
 # Config file location
 FRAMEWORK_RC="$HOME/.frameworkrc"
 
-# Load existing config if it exists (but only if not already set by framework-global)
-if [ -f "$FRAMEWORK_RC" ] && [ -z "$FW_IDES" ]; then
-  # shellcheck source=/dev/null
-  source "$FRAMEWORK_RC"
+# Load existing config if it exists
+if [ -f "$FRAMEWORK_RC" ]; then
+  # Read author info if not already set
+  if [ -z "$FW_AUTHOR_NAME" ]; then
+    FW_AUTHOR_NAME=$(grep "^FW_AUTHOR_NAME=" "$FRAMEWORK_RC" 2>/dev/null | cut -d'=' -f2 | tr -d '"')
+  fi
+  if [ -z "$FW_AUTHOR_EMAIL" ]; then
+    FW_AUTHOR_EMAIL=$(grep "^FW_AUTHOR_EMAIL=" "$FRAMEWORK_RC" 2>/dev/null | cut -d'=' -f2 | tr -d '"')
+  fi
+  if [ -z "$FW_AUTHOR_AFFILIATION" ]; then
+    FW_AUTHOR_AFFILIATION=$(grep "^FW_AUTHOR_AFFILIATION=" "$FRAMEWORK_RC" 2>/dev/null | cut -d'=' -f2 | tr -d '"')
+  fi
+  if [ -z "$FW_DEFAULT_FORMAT" ]; then
+    FW_DEFAULT_FORMAT=$(grep "^FW_DEFAULT_FORMAT=" "$FRAMEWORK_RC" 2>/dev/null | cut -d'=' -f2 | tr -d '"')
+  fi
+
+  # Read IDE/AI preferences only if not already set (from framework-global)
+  if [ -z "$FW_IDES" ]; then
+    FW_IDES=$(grep "^FW_IDES=" "$FRAMEWORK_RC" 2>/dev/null | cut -d'=' -f2 | tr -d '"')
+  fi
+  if [ -z "$FW_AI_SUPPORT" ]; then
+    FW_AI_SUPPORT=$(grep "^FW_AI_SUPPORT=" "$FRAMEWORK_RC" 2>/dev/null | cut -d'=' -f2 | tr -d '"')
+  fi
+  if [ -z "$FW_AI_ASSISTANTS" ]; then
+    FW_AI_ASSISTANTS=$(grep "^FW_AI_ASSISTANTS=" "$FRAMEWORK_RC" 2>/dev/null | cut -d'=' -f2 | tr -d '"')
+  fi
 fi
 
 echo -e "${BLUE}"
