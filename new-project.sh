@@ -23,8 +23,8 @@ fi
 # Config file location
 FRAMEWORK_RC="$HOME/.frameworkrc"
 
-# Load existing config if it exists
-if [ -f "$FRAMEWORK_RC" ]; then
+# Load existing config if it exists (but only if not already set by framework-global)
+if [ -f "$FRAMEWORK_RC" ] && [ -z "$FW_IDES" ]; then
   # shellcheck source=/dev/null
   source "$FRAMEWORK_RC"
 fi
