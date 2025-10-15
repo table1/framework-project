@@ -242,6 +242,8 @@ echo ""
 
 # AI assistant preferences
 echo -e "${YELLOW}Create AI assistant instruction files for this project?${NC}"
+echo "These files provide context about Framework conventions to AI coding assistants."
+echo ""
 
 # Set default based on global FW_AI_SUPPORT
 AI_DEFAULT="y"
