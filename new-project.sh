@@ -319,6 +319,38 @@ echo -e "${YELLOW}Directory:${NC} ${GREEN}$PROJECT_DIR${NC}"
 echo -e "${YELLOW}Type:${NC} ${GREEN}$PROJECT_TYPE${NC}"
 echo -e "${YELLOW}git:${NC} ${GREEN}$([ "$USE_GIT" = "TRUE" ] && echo "enabled" || echo "disabled")${NC}"
 echo -e "${YELLOW}renv:${NC} ${GREEN}$([ "$USE_RENV" = "TRUE" ] && echo "enabled" || echo "disabled")${NC}"
+
+# Display IDE selection
+IDE_DISPLAY=""
+case "$PROJECT_IDES" in
+  vscode) IDE_DISPLAY="Positron / VS Code" ;;
+  rstudio) IDE_DISPLAY="RStudio" ;;
+  rstudio,vscode|vscode,rstudio) IDE_DISPLAY="Both" ;;
+  none) IDE_DISPLAY="None" ;;
+  *) IDE_DISPLAY="$PROJECT_IDES" ;;
+esac
+echo -e "${YELLOW}IDE:${NC} ${GREEN}$IDE_DISPLAY${NC}"
+
+# Display AI assistant selection
+if [ "$PROJECT_AI_SUPPORT" = "never" ]; then
+  echo -e "${YELLOW}AI assistants:${NC} ${GREEN}disabled${NC}"
+else
+  AI_DISPLAY=""
+  case "$PROJECT_AI_ASSISTANTS" in
+    claude,copilot,agents|claude,agents,copilot|copilot,claude,agents|copilot,agents,claude|agents,claude,copilot|agents,copilot,claude)
+      AI_DISPLAY="All (Claude, Copilot, AGENTS.md)"
+      ;;
+    claude) AI_DISPLAY="Claude Code" ;;
+    copilot) AI_DISPLAY="GitHub Copilot" ;;
+    agents) AI_DISPLAY="AGENTS.md" ;;
+    *)
+      # Handle comma-separated combinations
+      AI_DISPLAY=$(echo "$PROJECT_AI_ASSISTANTS" | sed 's/claude/Claude/g; s/copilot/Copilot/g; s/agents/AGENTS.md/g; s/,/, /g')
+      ;;
+  esac
+  echo -e "${YELLOW}AI assistants:${NC} ${GREEN}$AI_DISPLAY${NC}"
+fi
+
 echo -e "${BLUE}────────────────────────────────────────────────────${NC}"
 echo ""
 
