@@ -343,7 +343,7 @@ if [ "$USE_GIT" = "TRUE" ]; then
   fi
 
   # Ask about data security hook
-  echo -en "${YELLOW}Scan for secrets/credentials before each commit? (y/n) [y]:${NC} "
+  echo -en "${YELLOW}Scan commits to prevent secrets/credentials/private data? (y/n) [y]:${NC} "
   eval "$READ_CMD SECURITY_RESPONSE"
 
   # Use default if empty
