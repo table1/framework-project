@@ -319,65 +319,76 @@ echo ""
 
 # Git hooks configuration (only if git is enabled)
 if [ "$USE_GIT" = "TRUE" ]; then
-  echo -e "${YELLOW}Configure git commit hooks?${NC}"
-  echo "These hooks can help maintain your project automatically."
+  echo -e "${YELLOW}Git Commit Hooks${NC}"
+  echo "These hooks run automatically before each commit."
   echo ""
-  echo -en "${YELLOW}Enable git hooks? (y/n) [y]:${NC} "
-  eval "$READ_CMD HOOKS_RESPONSE"
 
-  # Use default if empty
-  if [ -z "$HOOKS_RESPONSE" ]; then
-    HOOKS_RESPONSE="y"
-  fi
-
-  if [ "$HOOKS_RESPONSE" = "n" ] || [ "$HOOKS_RESPONSE" = "N" ]; then
-    PROJECT_HOOKS_ENABLED="FALSE"
-    PROJECT_HOOK_AI_SYNC="FALSE"
-    PROJECT_HOOK_DATA_SECURITY="FALSE"
-  else
-    PROJECT_HOOKS_ENABLED="TRUE"
-
-    echo ""
-    echo -e "${YELLOW}Which hooks would you like to enable?${NC}"
-    echo "  1. AI context sync - Keep AI assistant files synchronized"
-    echo "  2. Data security check - Scan for secrets/credentials before commit"
-    echo "  3. Both"
-    echo "  4. None (configure later with 'framework hooks:install')"
-    echo ""
-    echo -en "${YELLOW}Choose (1-4) [3]:${NC} "
-    eval "$READ_CMD HOOKS_CHOICE"
+  # Ask about AI sync hook (only if AI support enabled)
+  if [ "$PROJECT_AI_SUPPORT" = "yes" ]; then
+    echo -en "${YELLOW}Sync AI assistant files before each commit? (y/n) [y]:${NC} "
+    eval "$READ_CMD AI_SYNC_RESPONSE"
 
     # Use default if empty
-    if [ -z "$HOOKS_CHOICE" ]; then
-      HOOKS_CHOICE="3"
+    if [ -z "$AI_SYNC_RESPONSE" ]; then
+      AI_SYNC_RESPONSE="y"
     fi
 
-    case "$HOOKS_CHOICE" in
-      1)
-        PROJECT_HOOK_AI_SYNC="TRUE"
-        PROJECT_HOOK_DATA_SECURITY="FALSE"
-        ;;
-      2)
-        PROJECT_HOOK_AI_SYNC="FALSE"
-        PROJECT_HOOK_DATA_SECURITY="TRUE"
-        ;;
-      3)
-        PROJECT_HOOK_AI_SYNC="TRUE"
-        PROJECT_HOOK_DATA_SECURITY="TRUE"
-        ;;
-      4)
-        PROJECT_HOOK_AI_SYNC="FALSE"
-        PROJECT_HOOK_DATA_SECURITY="FALSE"
-        ;;
-      *)
-        # Default to both
-        PROJECT_HOOK_AI_SYNC="TRUE"
-        PROJECT_HOOK_DATA_SECURITY="TRUE"
-        ;;
-    esac
+    if [ "$AI_SYNC_RESPONSE" = "y" ] || [ "$AI_SYNC_RESPONSE" = "Y" ]; then
+      PROJECT_HOOK_AI_SYNC="TRUE"
+    else
+      PROJECT_HOOK_AI_SYNC="FALSE"
+    fi
+  else
+    PROJECT_HOOK_AI_SYNC="FALSE"
+  fi
 
-    # If AI sync is enabled, ask which file should be canonical
-    if [ "$PROJECT_HOOK_AI_SYNC" = "TRUE" ] && [ "$PROJECT_AI_SUPPORT" = "yes" ]; then
+  # Ask about data security hook
+  echo -en "${YELLOW}Scan for secrets/credentials before each commit? (y/n) [y]:${NC} "
+  eval "$READ_CMD SECURITY_RESPONSE"
+
+  # Use default if empty
+  if [ -z "$SECURITY_RESPONSE" ]; then
+    SECURITY_RESPONSE="y"
+  fi
+
+  if [ "$SECURITY_RESPONSE" = "y" ] || [ "$SECURITY_RESPONSE" = "Y" ]; then
+    PROJECT_HOOK_DATA_SECURITY="TRUE"
+  else
+    PROJECT_HOOK_DATA_SECURITY="FALSE"
+  fi
+
+  # Set hooks enabled flag
+  if [ "$PROJECT_HOOK_AI_SYNC" = "TRUE" ] || [ "$PROJECT_HOOK_DATA_SECURITY" = "TRUE" ]; then
+    PROJECT_HOOKS_ENABLED="TRUE"
+  else
+    PROJECT_HOOKS_ENABLED="FALSE"
+  fi
+
+  # If AI sync is enabled, determine canonical file
+  if [ "$PROJECT_HOOK_AI_SYNC" = "TRUE" ] && [ "$PROJECT_AI_SUPPORT" = "yes" ]; then
+    # Count how many assistants are enabled
+    ASSISTANT_COUNT=0
+    if echo "$PROJECT_AI_ASSISTANTS" | grep -q "agents"; then
+      ASSISTANT_COUNT=$((ASSISTANT_COUNT + 1))
+    fi
+    if echo "$PROJECT_AI_ASSISTANTS" | grep -q "claude"; then
+      ASSISTANT_COUNT=$((ASSISTANT_COUNT + 1))
+    fi
+    if echo "$PROJECT_AI_ASSISTANTS" | grep -q "copilot"; then
+      ASSISTANT_COUNT=$((ASSISTANT_COUNT + 1))
+    fi
+
+    # If only one assistant, auto-select its file as canonical
+    if [ "$ASSISTANT_COUNT" -eq 1 ]; then
+      if echo "$PROJECT_AI_ASSISTANTS" | grep -q "agents"; then
+        PROJECT_AI_CANONICAL="AGENTS.md"
+      elif echo "$PROJECT_AI_ASSISTANTS" | grep -q "claude"; then
+        PROJECT_AI_CANONICAL="CLAUDE.md"
+      elif echo "$PROJECT_AI_ASSISTANTS" | grep -q "copilot"; then
+        PROJECT_AI_CANONICAL=".github/copilot-instructions.md"
+      fi
+    else
+      # Multiple assistants - ask which should be canonical
       echo ""
       echo -e "${YELLOW}Which AI file should be the canonical source?${NC}"
       echo "Other files will be synced from this one."
@@ -430,9 +441,9 @@ if [ "$USE_GIT" = "TRUE" ]; then
       if [ -z "$PROJECT_AI_CANONICAL" ]; then
         PROJECT_AI_CANONICAL="AGENTS.md"
       fi
-    else
-      PROJECT_AI_CANONICAL=""
     fi
+  else
+    PROJECT_AI_CANONICAL=""
   fi
 
   echo ""
