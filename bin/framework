@@ -141,7 +141,7 @@ case "$COMMAND" in
   sync:ai-context)
     # Sync AI assistant context files
     shift
-    Rscript --quiet --no-save -e "library(framework); sync_ai_context()"
+    Rscript --quiet --no-save -e "library(framework); ai_sync_context()"
     ;;
 
   hooks:list)
@@ -186,6 +186,12 @@ case "$COMMAND" in
     Rscript --quiet --no-save -e "library(framework); hooks_disable('$HOOK_NAME')"
     ;;
 
+  status)
+    # Show project status
+    shift
+    Rscript --quiet --no-save -e "library(framework); status()"
+    ;;
+
   update|version|new)
     # Pass through to framework-global for these commands
     if command -v framework-global >/dev/null 2>&1; then
@@ -221,6 +227,7 @@ case "$COMMAND" in
     printf "  framework hooks:enable <name>           Enable specific hook\n"
     printf "  framework hooks:disable <name>          Disable specific hook\n\n"
     printf "${YELLOW}Maintenance:${NC}\n"
+    printf "  framework status                        Show project status and configuration\n"
     printf "  framework version                       Show Framework package version\n"
     printf "  framework update                        Update Framework from GitHub\n"
     printf "  framework help                          Show this help\n\n"
