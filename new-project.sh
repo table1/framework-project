@@ -200,8 +200,8 @@ cd "$PROJECT_DIR"
 # Remove .git directory
 rm -rf .git
 
-# Clean up development files
-rm -f CLAUDE.md .styler.R new-project.sh
+# Clean up: remove installer script and maintainer files before git init
+rm -f new-project.sh CLAUDE.md
 
 # Run setup by calling init.R with environment variables
 echo ""
