@@ -267,49 +267,65 @@ if [ "$AI_RESPONSE" = "n" ] || [ "$AI_RESPONSE" = "N" ]; then
   PROJECT_AI_SUPPORT="never"
   PROJECT_AI_ASSISTANTS=""
 else
-  # Ask which assistants
-  echo ""
-  echo -e "${YELLOW}Which AI assistants do you use?${NC}"
-  echo "  1. Claude Code"
-  echo "  2. GitHub Copilot"
-  echo "  3. AGENTS.md (OpenAI Codex and others)"
-  echo "  4. All of the above"
-  echo ""
-
-  # Set default based on global FW_AI_ASSISTANTS or default to all
-  ASSISTANTS_DEFAULT=4
-  if [ "$FW_AI_ASSISTANTS" = "claude" ]; then
-    ASSISTANTS_DEFAULT=1
-  elif [ "$FW_AI_ASSISTANTS" = "copilot" ]; then
-    ASSISTANTS_DEFAULT=2
-  elif [ "$FW_AI_ASSISTANTS" = "agents" ]; then
-    ASSISTANTS_DEFAULT=3
-  fi
-
-  echo -en "${YELLOW}Enter numbers (e.g., 1,3 or 4 for all) [$ASSISTANTS_DEFAULT]:${NC} "
-  eval "$READ_CMD ASSISTANTS_SELECTION"
-
-  # Use default if empty
-  if [ -z "$ASSISTANTS_SELECTION" ]; then
-    ASSISTANTS_SELECTION="$ASSISTANTS_DEFAULT"
-  fi
-
-  # Parse selection
+  # Ask about each assistant individually
   PROJECT_AI_ASSISTANTS=""
-  if [ "$ASSISTANTS_SELECTION" = "4" ]; then
-    PROJECT_AI_ASSISTANTS="claude,copilot,agents"
-  else
-    if echo "$ASSISTANTS_SELECTION" | grep -q "1"; then PROJECT_AI_ASSISTANTS="claude"; fi
-    if echo "$ASSISTANTS_SELECTION" | grep -q "2"; then
-      if [ -n "$PROJECT_AI_ASSISTANTS" ]; then PROJECT_AI_ASSISTANTS="$PROJECT_AI_ASSISTANTS,copilot"; else PROJECT_AI_ASSISTANTS="copilot"; fi
-    fi
-    if echo "$ASSISTANTS_SELECTION" | grep -q "3"; then
-      if [ -n "$PROJECT_AI_ASSISTANTS" ]; then PROJECT_AI_ASSISTANTS="$PROJECT_AI_ASSISTANTS,agents"; else PROJECT_AI_ASSISTANTS="agents"; fi
+  echo ""
+
+  # Claude Code
+  CLAUDE_DEFAULT="y"
+  if echo "$FW_AI_ASSISTANTS" | grep -q "claude"; then
+    CLAUDE_DEFAULT="y"
+  elif [ -n "$FW_AI_ASSISTANTS" ]; then
+    CLAUDE_DEFAULT="n"
+  fi
+  echo -en "${YELLOW}Use Claude Code? (y/n) [$CLAUDE_DEFAULT]:${NC} "
+  eval "$READ_CMD CLAUDE_RESPONSE"
+  if [ -z "$CLAUDE_RESPONSE" ]; then
+    CLAUDE_RESPONSE="$CLAUDE_DEFAULT"
+  fi
+  if [ "$CLAUDE_RESPONSE" = "y" ] || [ "$CLAUDE_RESPONSE" = "Y" ]; then
+    PROJECT_AI_ASSISTANTS="claude"
+  fi
+
+  # GitHub Copilot
+  COPILOT_DEFAULT="n"
+  if echo "$FW_AI_ASSISTANTS" | grep -q "copilot"; then
+    COPILOT_DEFAULT="y"
+  fi
+  echo -en "${YELLOW}Use GitHub Copilot? (y/n) [$COPILOT_DEFAULT]:${NC} "
+  eval "$READ_CMD COPILOT_RESPONSE"
+  if [ -z "$COPILOT_RESPONSE" ]; then
+    COPILOT_RESPONSE="$COPILOT_DEFAULT"
+  fi
+  if [ "$COPILOT_RESPONSE" = "y" ] || [ "$COPILOT_RESPONSE" = "Y" ]; then
+    if [ -n "$PROJECT_AI_ASSISTANTS" ]; then
+      PROJECT_AI_ASSISTANTS="$PROJECT_AI_ASSISTANTS,copilot"
+    else
+      PROJECT_AI_ASSISTANTS="copilot"
     fi
   fi
 
+  # AGENTS.md (other assistants)
+  AGENTS_DEFAULT="n"
+  if echo "$FW_AI_ASSISTANTS" | grep -q "agents"; then
+    AGENTS_DEFAULT="y"
+  fi
+  echo -en "${YELLOW}Use AGENTS.md (OpenAI Codex, Cursor, etc.)? (y/n) [$AGENTS_DEFAULT]:${NC} "
+  eval "$READ_CMD AGENTS_RESPONSE"
+  if [ -z "$AGENTS_RESPONSE" ]; then
+    AGENTS_RESPONSE="$AGENTS_DEFAULT"
+  fi
+  if [ "$AGENTS_RESPONSE" = "y" ] || [ "$AGENTS_RESPONSE" = "Y" ]; then
+    if [ -n "$PROJECT_AI_ASSISTANTS" ]; then
+      PROJECT_AI_ASSISTANTS="$PROJECT_AI_ASSISTANTS,agents"
+    else
+      PROJECT_AI_ASSISTANTS="agents"
+    fi
+  fi
+
+  # Default to Claude if nothing selected
   if [ -z "$PROJECT_AI_ASSISTANTS" ]; then
-    PROJECT_AI_ASSISTANTS="claude"  # Default to Claude if nothing selected
+    PROJECT_AI_ASSISTANTS="claude"
   fi
 
   PROJECT_AI_SUPPORT="yes"
