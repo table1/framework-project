@@ -126,7 +126,67 @@ case "$COMMAND" in
     Rscript --quiet --no-save -e "library(framework); configure_directories()"
     ;;
 
-  update|version)
+  configure:ides)
+    # Configure IDE preferences
+    shift
+    Rscript --quiet --no-save -e "library(framework); configure_ides()"
+    ;;
+
+  configure:ai-agents)
+    # Configure AI assistant support
+    shift
+    Rscript --quiet --no-save -e "library(framework); configure_ai_agents()"
+    ;;
+
+  sync:ai-context)
+    # Sync AI assistant context files
+    shift
+    Rscript --quiet --no-save -e "library(framework); sync_ai_context()"
+    ;;
+
+  hooks:list)
+    # Show git hook status
+    shift
+    Rscript --quiet --no-save -e "library(framework); hooks_list()"
+    ;;
+
+  hooks:install)
+    # Install git hooks
+    shift
+    Rscript --quiet --no-save -e "library(framework); hooks_install()"
+    ;;
+
+  hooks:uninstall)
+    # Remove git hooks
+    shift
+    Rscript --quiet --no-save -e "library(framework); hooks_uninstall()"
+    ;;
+
+  hooks:enable)
+    # Enable specific hook
+    shift
+    HOOK_NAME="${1}"
+    if [ -z "$HOOK_NAME" ]; then
+      printf "${YELLOW}Usage: framework hooks:enable <hook_name>${NC}\n"
+      printf "Available hooks: ai_sync, data_security\n"
+      exit 1
+    fi
+    Rscript --quiet --no-save -e "library(framework); hooks_enable('$HOOK_NAME')"
+    ;;
+
+  hooks:disable)
+    # Disable specific hook
+    shift
+    HOOK_NAME="${1}"
+    if [ -z "$HOOK_NAME" ]; then
+      printf "${YELLOW}Usage: framework hooks:disable <hook_name>${NC}\n"
+      printf "Available hooks: ai_sync, data_security\n"
+      exit 1
+    fi
+    Rscript --quiet --no-save -e "library(framework); hooks_disable('$HOOK_NAME')"
+    ;;
+
+  update|version|new)
     # Pass through to framework-global for these commands
     if command -v framework-global >/dev/null 2>&1; then
       framework-global "$@"
@@ -139,26 +199,36 @@ case "$COMMAND" in
 
   help|--help|-h)
     printf "${BLUE}Framework CLI - Project Commands${NC}\n\n"
-    printf "${YELLOW}Make Commands:${NC}\n"
-    printf "  framework make:notebook [name]      Create notebook (Quarto/RMarkdown)\n"
-    printf "  framework make:quarto [name]        Create Quarto notebook (.qmd)\n"
-    printf "  framework make:rmd [name]           Create RMarkdown notebook (.Rmd)\n"
-    printf "  framework make:script [name]        Create R script (.R)\n"
-    printf "  framework make:presentation [name]  Create reveal.js presentation\n\n"
-    printf "${YELLOW}Configure Commands:${NC}\n"
-    printf "  framework configure:data            Add data source to config\n"
-    printf "  framework configure:connection      Add database connection\n"
-    printf "  framework configure:author          Set author information\n"
-    printf "  framework configure:packages        Add package dependency\n"
-    printf "  framework configure:directories     Configure project directories\n\n"
+    printf "${YELLOW}Make:${NC}\n"
+    printf "  framework make:notebook [name]          Create notebook (Quarto/RMarkdown)\n"
+    printf "  framework make:quarto [name]            Create Quarto notebook (.qmd)\n"
+    printf "  framework make:rmd [name]               Create RMarkdown notebook (.Rmd)\n"
+    printf "  framework make:script [name]            Create R script (.R)\n"
+    printf "  framework make:presentation [name]      Create reveal.js presentation\n\n"
+    printf "${YELLOW}Configure:${NC}\n"
+    printf "  framework configure:author              Set author information\n"
+    printf "  framework configure:data                Add data source to config\n"
+    printf "  framework configure:connection          Add database connection\n"
+    printf "  framework configure:packages            Add package dependency\n"
+    printf "  framework configure:directories         Configure project directories\n"
+    printf "  framework configure:ides                Configure IDE preferences\n"
+    printf "  framework configure:ai-agents           Configure AI assistant support\n\n"
+    printf "${YELLOW}AI & Git Hooks:${NC}\n"
+    printf "  framework sync:ai-context               Sync AI assistant context files\n"
+    printf "  framework hooks:list                    Show git hook status\n"
+    printf "  framework hooks:install                 Install git hooks\n"
+    printf "  framework hooks:uninstall               Remove git hooks\n"
+    printf "  framework hooks:enable <name>           Enable specific hook\n"
+    printf "  framework hooks:disable <name>          Disable specific hook\n\n"
+    printf "${YELLOW}Maintenance:${NC}\n"
+    printf "  framework version                       Show Framework package version\n"
+    printf "  framework update                        Update Framework from GitHub\n"
+    printf "  framework help                          Show this help\n\n"
     printf "${YELLOW}Examples:${NC}\n"
     printf "  framework make:notebook analysis    ${GREEN}# Create notebooks/analysis.qmd${NC}\n"
     printf "  framework make:script process       ${GREEN}# Create scripts/process.R${NC}\n"
-    printf "  framework configure:author          ${GREEN}# Set your name and affiliation${NC}\n\n"
-    printf "${YELLOW}Global Commands (work from any directory):${NC}\n"
-    printf "  framework version                   Show Framework package version\n"
-    printf "  framework update                    Update Framework from GitHub\n"
-    printf "  framework new [name]                Create new project\n\n"
+    printf "  framework configure:author          ${GREEN}# Set your name and affiliation${NC}\n"
+    printf "  framework hooks:list                ${GREEN}# Check which hooks are enabled${NC}\n\n"
     printf "${YELLOW}More Information:${NC}\n"
     printf "  Package: https://github.com/table1/framework\n"
     ;;
