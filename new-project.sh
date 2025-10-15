@@ -181,6 +181,113 @@ else
 fi
 
 echo ""
+
+# IDE preferences
+echo -e "${YELLOW}Which IDE/editor will you use for this project?${NC}"
+echo "  1. Positron / VS Code"
+echo "  2. RStudio"
+echo "  3. Both"
+echo "  4. Neither (other editor)"
+echo ""
+
+# Set default based on global FW_IDES or default to option 1 (vscode)
+IDE_DEFAULT=1
+if [ "$FW_IDES" = "rstudio" ]; then
+  IDE_DEFAULT=2
+elif [ "$FW_IDES" = "rstudio,vscode" ] || [ "$FW_IDES" = "vscode,rstudio" ]; then
+  IDE_DEFAULT=3
+elif [ "$FW_IDES" = "none" ]; then
+  IDE_DEFAULT=4
+fi
+
+echo -en "${YELLOW}Choose IDE (1-4) [$IDE_DEFAULT]:${NC} "
+eval "$READ_CMD IDE_CHOICE"
+
+# Use default if empty
+if [ -z "$IDE_CHOICE" ]; then
+  IDE_CHOICE="$IDE_DEFAULT"
+fi
+
+case "$IDE_CHOICE" in
+  1) PROJECT_IDES="vscode" ;;
+  2) PROJECT_IDES="rstudio" ;;
+  3) PROJECT_IDES="rstudio,vscode" ;;
+  4) PROJECT_IDES="none" ;;
+  *) PROJECT_IDES="$FW_IDES" ;;  # Fallback to global default
+esac
+
+echo ""
+
+# AI assistant preferences
+echo -e "${YELLOW}Create AI assistant instruction files for this project?${NC}"
+
+# Set default based on global FW_AI_SUPPORT
+AI_DEFAULT="y"
+if [ "$FW_AI_SUPPORT" = "never" ]; then
+  AI_DEFAULT="n"
+fi
+
+echo -en "${YELLOW}Enable AI assistant support? (y/n) [$AI_DEFAULT]:${NC} "
+eval "$READ_CMD AI_RESPONSE"
+
+# Use default if empty
+if [ -z "$AI_RESPONSE" ]; then
+  AI_RESPONSE="$AI_DEFAULT"
+fi
+
+if [ "$AI_RESPONSE" = "n" ] || [ "$AI_RESPONSE" = "N" ]; then
+  PROJECT_AI_SUPPORT="never"
+  PROJECT_AI_ASSISTANTS=""
+else
+  # Ask which assistants
+  echo ""
+  echo -e "${YELLOW}Which AI assistants do you use?${NC}"
+  echo "  1. Claude Code"
+  echo "  2. GitHub Copilot"
+  echo "  3. AGENTS.md (OpenAI Codex and others)"
+  echo "  4. All of the above"
+  echo ""
+
+  # Set default based on global FW_AI_ASSISTANTS or default to all
+  ASSISTANTS_DEFAULT=4
+  if [ "$FW_AI_ASSISTANTS" = "claude" ]; then
+    ASSISTANTS_DEFAULT=1
+  elif [ "$FW_AI_ASSISTANTS" = "copilot" ]; then
+    ASSISTANTS_DEFAULT=2
+  elif [ "$FW_AI_ASSISTANTS" = "agents" ]; then
+    ASSISTANTS_DEFAULT=3
+  fi
+
+  echo -en "${YELLOW}Enter numbers (e.g., 1,3 or 4 for all) [$ASSISTANTS_DEFAULT]:${NC} "
+  eval "$READ_CMD ASSISTANTS_SELECTION"
+
+  # Use default if empty
+  if [ -z "$ASSISTANTS_SELECTION" ]; then
+    ASSISTANTS_SELECTION="$ASSISTANTS_DEFAULT"
+  fi
+
+  # Parse selection
+  PROJECT_AI_ASSISTANTS=""
+  if [ "$ASSISTANTS_SELECTION" = "4" ]; then
+    PROJECT_AI_ASSISTANTS="claude,copilot,agents"
+  else
+    if echo "$ASSISTANTS_SELECTION" | grep -q "1"; then PROJECT_AI_ASSISTANTS="claude"; fi
+    if echo "$ASSISTANTS_SELECTION" | grep -q "2"; then
+      if [ -n "$PROJECT_AI_ASSISTANTS" ]; then PROJECT_AI_ASSISTANTS="$PROJECT_AI_ASSISTANTS,copilot"; else PROJECT_AI_ASSISTANTS="copilot"; fi
+    fi
+    if echo "$ASSISTANTS_SELECTION" | grep -q "3"; then
+      if [ -n "$PROJECT_AI_ASSISTANTS" ]; then PROJECT_AI_ASSISTANTS="$PROJECT_AI_ASSISTANTS,agents"; else PROJECT_AI_ASSISTANTS="agents"; fi
+    fi
+  fi
+
+  if [ -z "$PROJECT_AI_ASSISTANTS" ]; then
+    PROJECT_AI_ASSISTANTS="claude"  # Default to Claude if nothing selected
+  fi
+
+  PROJECT_AI_SUPPORT="yes"
+fi
+
+echo ""
 echo -e "${BLUE}────────────────────────────────────────────────────${NC}"
 echo -e "${YELLOW}Project name:${NC} ${GREEN}$PROJECT_NAME${NC}"
 echo -e "${YELLOW}Directory:${NC} ${GREEN}$PROJECT_DIR${NC}"
@@ -217,6 +324,9 @@ export FW_AUTHOR_NAME="$FW_AUTHOR_NAME"
 export FW_AUTHOR_EMAIL="$FW_AUTHOR_EMAIL"
 export FW_AUTHOR_AFFILIATION="$FW_AUTHOR_AFFILIATION"
 export FW_DEFAULT_FORMAT="$PROJECT_DEFAULT_FORMAT"
+export FW_IDES="$PROJECT_IDES"
+export FW_AI_SUPPORT="$PROJECT_AI_SUPPORT"
+export FW_AI_ASSISTANTS="$PROJECT_AI_ASSISTANTS"
 export FW_NON_INTERACTIVE="true"
 
 # Pass through FW_DEV_MODE and FW_DEV_PATH if set
