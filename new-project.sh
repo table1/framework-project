@@ -49,6 +49,9 @@ if [ -f "$FRAMEWORK_RC" ]; then
   if [ -z "$FW_AI_ASSISTANTS" ]; then
     FW_AI_ASSISTANTS=$(grep "^FW_AI_ASSISTANTS=" "$FRAMEWORK_RC" 2>/dev/null | cut -d'=' -f2 | tr -d '"')
   fi
+  if [ -z "$FW_AI_CANONICAL_DEFAULT" ]; then
+    FW_AI_CANONICAL_DEFAULT=$(grep "^FW_AI_CANONICAL_DEFAULT=" "$FRAMEWORK_RC" 2>/dev/null | cut -d'=' -f2 | tr -d '"')
+  fi
 fi
 
 echo -e "${BLUE}"
@@ -313,6 +316,133 @@ else
 fi
 
 echo ""
+
+# Git hooks configuration (only if git is enabled)
+if [ "$USE_GIT" = "TRUE" ]; then
+  echo -e "${YELLOW}Configure git commit hooks?${NC}"
+  echo "These hooks can help maintain your project automatically."
+  echo ""
+  echo -en "${YELLOW}Enable git hooks? (y/n) [y]:${NC} "
+  eval "$READ_CMD HOOKS_RESPONSE"
+
+  # Use default if empty
+  if [ -z "$HOOKS_RESPONSE" ]; then
+    HOOKS_RESPONSE="y"
+  fi
+
+  if [ "$HOOKS_RESPONSE" = "n" ] || [ "$HOOKS_RESPONSE" = "N" ]; then
+    PROJECT_HOOKS_ENABLED="FALSE"
+    PROJECT_HOOK_AI_SYNC="FALSE"
+    PROJECT_HOOK_DATA_SECURITY="FALSE"
+  else
+    PROJECT_HOOKS_ENABLED="TRUE"
+
+    echo ""
+    echo -e "${YELLOW}Which hooks would you like to enable?${NC}"
+    echo "  1. AI context sync - Keep AI assistant files synchronized"
+    echo "  2. Data security check - Scan for secrets/credentials before commit"
+    echo "  3. Both"
+    echo "  4. None (configure later with 'framework hooks:install')"
+    echo ""
+    echo -en "${YELLOW}Choose (1-4) [3]:${NC} "
+    eval "$READ_CMD HOOKS_CHOICE"
+
+    # Use default if empty
+    if [ -z "$HOOKS_CHOICE" ]; then
+      HOOKS_CHOICE="3"
+    fi
+
+    case "$HOOKS_CHOICE" in
+      1)
+        PROJECT_HOOK_AI_SYNC="TRUE"
+        PROJECT_HOOK_DATA_SECURITY="FALSE"
+        ;;
+      2)
+        PROJECT_HOOK_AI_SYNC="FALSE"
+        PROJECT_HOOK_DATA_SECURITY="TRUE"
+        ;;
+      3)
+        PROJECT_HOOK_AI_SYNC="TRUE"
+        PROJECT_HOOK_DATA_SECURITY="TRUE"
+        ;;
+      4)
+        PROJECT_HOOK_AI_SYNC="FALSE"
+        PROJECT_HOOK_DATA_SECURITY="FALSE"
+        ;;
+      *)
+        # Default to both
+        PROJECT_HOOK_AI_SYNC="TRUE"
+        PROJECT_HOOK_DATA_SECURITY="TRUE"
+        ;;
+    esac
+
+    # If AI sync is enabled, ask which file should be canonical
+    if [ "$PROJECT_HOOK_AI_SYNC" = "TRUE" ] && [ "$PROJECT_AI_SUPPORT" = "yes" ]; then
+      echo ""
+      echo -e "${YELLOW}Which AI file should be the canonical source?${NC}"
+      echo "Other files will be synced from this one."
+      echo ""
+
+      # Build options based on selected assistants
+      CANONICAL_OPTIONS=()
+      CANONICAL_OPTION_NUM=1
+      CANONICAL_DEFAULT_NUM=1
+
+      if echo "$PROJECT_AI_ASSISTANTS" | grep -q "agents"; then
+        echo "  ${CANONICAL_OPTION_NUM}. AGENTS.md (recommended - supports most assistants)"
+        CANONICAL_OPTIONS[$CANONICAL_OPTION_NUM]="AGENTS.md"
+        if [ "$FW_AI_CANONICAL_DEFAULT" = "AGENTS.md" ]; then
+          CANONICAL_DEFAULT_NUM=$CANONICAL_OPTION_NUM
+        fi
+        CANONICAL_OPTION_NUM=$((CANONICAL_OPTION_NUM + 1))
+      fi
+
+      if echo "$PROJECT_AI_ASSISTANTS" | grep -q "claude"; then
+        echo "  ${CANONICAL_OPTION_NUM}. CLAUDE.md"
+        CANONICAL_OPTIONS[$CANONICAL_OPTION_NUM]="CLAUDE.md"
+        if [ "$FW_AI_CANONICAL_DEFAULT" = "CLAUDE.md" ]; then
+          CANONICAL_DEFAULT_NUM=$CANONICAL_OPTION_NUM
+        fi
+        CANONICAL_OPTION_NUM=$((CANONICAL_OPTION_NUM + 1))
+      fi
+
+      if echo "$PROJECT_AI_ASSISTANTS" | grep -q "copilot"; then
+        echo "  ${CANONICAL_OPTION_NUM}. .github/copilot-instructions.md"
+        CANONICAL_OPTIONS[$CANONICAL_OPTION_NUM]=".github/copilot-instructions.md"
+        if [ "$FW_AI_CANONICAL_DEFAULT" = ".github/copilot-instructions.md" ]; then
+          CANONICAL_DEFAULT_NUM=$CANONICAL_OPTION_NUM
+        fi
+        CANONICAL_OPTION_NUM=$((CANONICAL_OPTION_NUM + 1))
+      fi
+
+      echo ""
+      echo -en "${YELLOW}Choose canonical file (1-$((CANONICAL_OPTION_NUM - 1))) [$CANONICAL_DEFAULT_NUM]:${NC} "
+      eval "$READ_CMD CANONICAL_CHOICE"
+
+      # Use default if empty
+      if [ -z "$CANONICAL_CHOICE" ]; then
+        CANONICAL_CHOICE="$CANONICAL_DEFAULT_NUM"
+      fi
+
+      PROJECT_AI_CANONICAL="${CANONICAL_OPTIONS[$CANONICAL_CHOICE]}"
+
+      # Fallback to AGENTS.md if nothing selected
+      if [ -z "$PROJECT_AI_CANONICAL" ]; then
+        PROJECT_AI_CANONICAL="AGENTS.md"
+      fi
+    else
+      PROJECT_AI_CANONICAL=""
+    fi
+  fi
+
+  echo ""
+else
+  PROJECT_HOOKS_ENABLED="FALSE"
+  PROJECT_HOOK_AI_SYNC="FALSE"
+  PROJECT_HOOK_DATA_SECURITY="FALSE"
+  PROJECT_AI_CANONICAL=""
+fi
+
 echo -e "${BLUE}────────────────────────────────────────────────────${NC}"
 echo -e "${YELLOW}Project name:${NC} ${GREEN}$PROJECT_NAME${NC}"
 echo -e "${YELLOW}Directory:${NC} ${GREEN}$PROJECT_DIR${NC}"
@@ -351,6 +481,26 @@ else
   echo -e "${YELLOW}AI assistants:${NC} ${GREEN}$AI_DISPLAY${NC}"
 fi
 
+# Display git hooks if git enabled
+if [ "$USE_GIT" = "TRUE" ] && [ "$PROJECT_HOOKS_ENABLED" = "TRUE" ]; then
+  HOOKS_DISPLAY=""
+  if [ "$PROJECT_HOOK_AI_SYNC" = "TRUE" ] && [ "$PROJECT_HOOK_DATA_SECURITY" = "TRUE" ]; then
+    HOOKS_DISPLAY="AI sync, Data security"
+  elif [ "$PROJECT_HOOK_AI_SYNC" = "TRUE" ]; then
+    HOOKS_DISPLAY="AI sync"
+  elif [ "$PROJECT_HOOK_DATA_SECURITY" = "TRUE" ]; then
+    HOOKS_DISPLAY="Data security"
+  else
+    HOOKS_DISPLAY="None"
+  fi
+
+  echo -e "${YELLOW}Git hooks:${NC} ${GREEN}$HOOKS_DISPLAY${NC}"
+
+  if [ "$PROJECT_HOOK_AI_SYNC" = "TRUE" ] && [ -n "$PROJECT_AI_CANONICAL" ]; then
+    echo -e "${YELLOW}AI canonical:${NC} ${GREEN}$PROJECT_AI_CANONICAL${NC}"
+  fi
+fi
+
 echo -e "${BLUE}────────────────────────────────────────────────────${NC}"
 echo ""
 
@@ -384,6 +534,10 @@ export FW_DEFAULT_FORMAT="$PROJECT_DEFAULT_FORMAT"
 export FW_IDES="$PROJECT_IDES"
 export FW_AI_SUPPORT="$PROJECT_AI_SUPPORT"
 export FW_AI_ASSISTANTS="$PROJECT_AI_ASSISTANTS"
+export FW_HOOKS_ENABLED="$PROJECT_HOOKS_ENABLED"
+export FW_HOOK_AI_SYNC="$PROJECT_HOOK_AI_SYNC"
+export FW_HOOK_DATA_SECURITY="$PROJECT_HOOK_DATA_SECURITY"
+export FW_AI_CANONICAL="$PROJECT_AI_CANONICAL"
 export FW_NON_INTERACTIVE="true"
 
 # Pass through FW_DEV_MODE and FW_DEV_PATH if set
