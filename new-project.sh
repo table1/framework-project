@@ -201,7 +201,7 @@ cd "$PROJECT_DIR"
 rm -rf .git
 
 # Clean up development files
-rm -f CLAUDE.md .styler.R
+rm -f CLAUDE.md .styler.R new-project.sh
 
 # Run setup by calling init.R with environment variables
 echo ""
@@ -241,6 +241,3 @@ echo -e "  ${GREEN}library(framework)${NC}"
 echo -e "  ${GREEN}scaffold()${NC}"
 echo ""
 echo -e "${BLUE}ℹ${NC}  For project types, renv, and other options, see README.md"
-
-# Clean up: remove the installer script
-rm -f new-project.sh
