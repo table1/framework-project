@@ -38,6 +38,9 @@ if [ -f "$FRAMEWORK_RC" ]; then
   if [ -z "$FW_DEFAULT_FORMAT" ]; then
     FW_DEFAULT_FORMAT=$(grep "^FW_DEFAULT_FORMAT=" "$FRAMEWORK_RC" 2>/dev/null | cut -d'=' -f2 | tr -d '"')
   fi
+  if [ -z "$FW_CONFIG_DIR" ]; then
+    FW_CONFIG_DIR=$(grep "^FW_CONFIG_DIR=" "$FRAMEWORK_RC" 2>/dev/null | cut -d'=' -f2 | tr -d '"')
+  fi
 
   # Read IDE/AI preferences only if not already set (from framework-global)
   if [ -z "$FW_IDES" ]; then
@@ -93,6 +96,21 @@ if [ -z "$FW_AUTHOR_NAME" ]; then
     *) FW_DEFAULT_FORMAT="quarto" ;;
   esac
 
+  echo ""
+  echo -e "${YELLOW}Configuration directory preference:${NC}"
+  echo "Where should split configuration files be stored in new projects?"
+  echo ""
+  echo "  1. settings/ (descriptive, follows R conventions) - recommended"
+  echo "  2. config/ (compact, follows web framework conventions)"
+  echo ""
+  echo -en "${YELLOW}Choose directory (1-2) [1]:${NC} "
+  eval "$READ_CMD CONFIG_DIR_CHOICE"
+
+  case "$CONFIG_DIR_CHOICE" in
+    2) FW_CONFIG_DIR="config" ;;
+    *) FW_CONFIG_DIR="settings" ;;
+  esac
+
   # Save to config file
   {
     echo "# Framework configuration"
@@ -101,6 +119,7 @@ if [ -z "$FW_AUTHOR_NAME" ]; then
     echo "FW_AUTHOR_EMAIL=\"$FW_AUTHOR_EMAIL\""
     echo "FW_AUTHOR_AFFILIATION=\"$FW_AUTHOR_AFFILIATION\""
     echo "FW_DEFAULT_FORMAT=\"$FW_DEFAULT_FORMAT\""
+    echo "FW_CONFIG_DIR=\"$FW_CONFIG_DIR\""
   } > "$FRAMEWORK_RC"
 
   echo ""
